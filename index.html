@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProgBuddy — つぶやいて、学んで、次の人を助けよう</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231D9E75'/><text y='.9em' font-size='70' x='12'>💻</text></svg>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:       #1D9E75;
+      --green-light: #E1F5EE;
+      --green-mid:   #9FE1CB;
+      --green-dark:  #0F6E56;
+      --green-deep:  #085041;
+      --bg:          #f9f9f8;
+      --surface:     #ffffff;
+      --border:      rgba(0,0,0,0.08);
+      --border-mid:  rgba(0,0,0,0.14);
+      --text:        #1a1a1a;
+      --text-sub:    #6b6b6b;
+      --text-hint:   #9a9a9a;
+      --radius-md:   8px;
+      --radius-lg:   12px;
+      --radius-xl:   16px;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===== LAYOUT ===== */
+    .app { max-width: 720px; margin: 0 auto; padding: 0 16px 80px; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ===== HEADER ===== */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(249,249,248,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 0.5px solid var(--border);
+      padding: 12px 0;
+      margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: var(--green); display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 17px;
+    }
+    .logo-text { font-size: 18px; font-weight: 700; color: var(--text); }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: var(--radius-md);
+      font-size: 13px; font-family: inherit; font-weight: 500;
+      cursor: pointer; border: none; transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--green); color: #fff; }
+    .btn-primary:hover { background: var(--green-dark); }
+    .btn-outline {
+      background: transparent;
+      border: 0.5px solid var(--border-mid);
+      color: var(--text-sub);
+    }
+    .btn-outline:hover { border-color: var(--green); color: var(--green-dark); }
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+    .btn-danger { background: #FCEBEB; color: #A32D2D; border: 0.5px solid #F09595; }
+
+    /* ===== NAV TABS ===== */
+    .nav-tabs {
+      display: flex; border-bottom: 0.5px solid var(--border);
+      margin-bottom: 20px; gap: 0;
+    }
+    .nav-tab {
+      flex: 1; padding: 10px 4px; text-align: center;
+      font-size: 13px; font-weight: 500; color: var(--text-sub);
+      cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all 0.12s; display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .nav-tab.active { color: var(--green-dark); border-bottom-color: var(--green); }
+    .nav-tab:hover:not(.active) { color: var(--text); }
+    .nav-tab i { font-size: 16px; }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .card-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+
+    /* ===== FORM ===== */
+    .form-row { margin-bottom: 14px; }
+    .form-label { font-size: 12px; color: var(--text-sub); margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+    .badge-public  { font-size: 10px; background: var(--green-light); color: var(--green-dark); padding: 2px 7px; border-radius: 10px; }
+    .badge-private { font-size: 10px; background: #EEEDFE; color: #534AB7; padding: 2px 7px; border-radius: 10px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-mid);
+      padding: 9px 12px; font-size: 14px; font-family: inherit;
+      color: var(--text); background: var(--bg);
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none; border-color: var(--green);
+    }
+    .form-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+    .form-hint { font-size: 11px; color: var(--text-hint); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+    .sep { display: flex; align-items: center; gap: 8px; margin: 18px 0 14px; }
+    .sep-line { flex: 1; height: 0.5px; background: var(--border); }
+    .sep-label { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
+    .sep-public  { background: var(--green-light); color: var(--green-dark); }
+    .sep-private { background: #EEEDFE; color: #534AB7; }
+
+    /* ===== TOAST ===== */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: #1a1a1a; color: #fff;
+      padding: 10px 20px; border-radius: 30px;
+      font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+      transition: transform 0.3s ease; z-index: 9999;
+      white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ===== LANDING ===== */
+    .hero { text-align: center; padding: 3rem 0 2rem; }
+    .hero-emoji { font-size: 52px; margin-bottom: 16px; }
+    .hero-title { font-size: 26px; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
+    .hero-sub { font-size: 14px; color: var(--text-sub); line-height: 1.8; max-width: 400px; margin: 0 auto 28px; }
+    .hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px; margin-top: 2rem; }
+    .feature-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; text-align: center; }
+    .feature-card .fi { font-size: 26px; margin-bottom: 8px; }
+    .feature-card .ft { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .feature-card .fd { font-size: 11px; color: var(--text-sub); line-height: 1.5; }
+
+    /* ===== COMMUNITY GRID ===== */
+    .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 10px; margin-bottom: 16px; }
+    .community-card {
+      background: var(--surface); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 14px;
+      cursor: pointer; transition: all 0.15s; position: relative;
+    }
+    .community-card:hover:not(.locked) { border-color: var(--green); box-shadow: 0 2px 10px rgba(29,158,117,0.08); }
+    .community-card.locked { opacity: 0.5; cursor: not-allowed; }
+    .comm-icon {
+      width: 38px; height: 38px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-bottom: 10px;
+    }
+    .ci-open    { background: var(--green-light); color: var(--green-dark); }
+    .ci-school  { background: #E6F1FB; color: #185FA5; }
+    .ci-dept    { background: #FBEAF0; color: #993556; }
+    .ci-company { background: #EEEDFE; color: #534AB7; }
+    .comm-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+    .comm-desc { font-size: 11px; color: var(--text-sub); line-height: 1.4; }
+    .comm-badge {
+      position: absolute; top: 8px; right: 8px;
+      font-size: 10px; padding: 2px 7px; border-radius: 10px;
+    }
+    .cb-joined { background: var(--green-light); color: var(--green-dark); }
+    .cb-locked { background: #f1f0ec; color: var(--text-hint); }
+
+    /* ===== FILTER ===== */
+    .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filter-btn {
+      font-size: 12px; padding: 5px 12px; border-radius: 20px;
+      border: 0.5px solid var(--border-mid);
+      background: var(--surface); color: var(--text-sub);
+      cursor: pointer; font-family: inherit; transition: all 0.12s;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .filter-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+    /* ===== Q&A CARDS ===== */
+    .qa-card {
+      background: var(--surface); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 14px 18px;
+      margin-bottom: 10px; transition: border-color 0.15s;
+    }
+    .qa-card.is-solved { border-left: 3px solid var(--green); }
+    .qa-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .qa-title-text {
+      font-size: 14px; font-weight: 700; line-height: 1.5; flex: 1;
+      cursor: pointer; color: var(--text);
+    }
+    .qa-title-text:hover { color: var(--green-dark); }
+    .tag {
+      font-size: 10px; padding: 2px 8px; border-radius: 20px;
+      margin-left: 8px; white-space: nowrap; flex-shrink: 0; font-weight: 500;
+    }
+    .t-wifi   { background: var(--green-light); color: var(--green-deep); }
+    .t-app    { background: #FAEEDA; color: #633806; }
+    .t-device { background: #EAF3DE; color: #3B6D11; }
+    .t-code   { background: #E6F1FB; color: #185FA5; }
+    .t-secret { background: #EEEDFE; color: #534AB7; }
+    .t-new    { background: var(--green-light); color: var(--green-dark); }
+
+    .qa-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 11px; color: var(--text-sub); }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500;
+    }
+    .sp-open     { background: #FAEEDA; color: #854F0B; }
+    .sp-answered { background: #E6F1FB; color: #185FA5; }
+    .sp-solved   { background: var(--green-light); color: var(--green-deep); }
+    .role-pill {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 8px; border-radius: 20px; border: 0.5px solid;
+      font-size: 11px;
+    }
+    .rp-student  { background: #E6F1FB; color: #185FA5; border-color: #B5D4F4; }
+    .rp-worker   { background: #EEEDFE; color: #534AB7; border-color: #CECBF6; }
+    .rp-it       { background: #EAF3DE; color: #3B6D11; border-color: #C0DD97; }
+    .rp-housewife{ background: #FBEAF0; color: #993556; border-color: #F4C0D1; }
+    .rp-senior   { background: #FAEEDA; color: #854F0B; border-color: #FAC775; }
+    .urg-high { background: #FCEBEB; color: #A32D2D; padding: 2px 7px; border-radius: 20px; font-size: 11px; }
+    .urg-mid  { background: #FAEEDA; color: #854F0B; padding: 2px 7px; border-radius: 20px; font-size: 11px; }
+    .urg-low  { background: #EAF3DE; color: #3B6D11; padding: 2px 7px; border-radius: 20px; font-size: 11px; }
+
+    /* ===== ANSWERS ===== */
+    .answers-section { display: none; margin-top: 12px; border-top: 0.5px solid var(--border); padding-top: 14px; }
+    .answers-section.open { display: block; }
+    .solved-banner {
+      background: var(--green-light); border-radius: var(--radius-md);
+      padding: 8px 12px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--green-deep); font-weight: 500;
+    }
+    .answer-item { padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+    .answer-item:last-of-type { border-bottom: none; }
+    .answer-header { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
+    .answer-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--bg); border: 0.5px solid var(--border-mid);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--text-sub); flex-shrink: 0;
+    }
+    .answer-nick { font-size: 13px; font-weight: 700; }
+    .answer-time { font-size: 11px; color: var(--text-hint); }
+    .ai-pill { font-size: 10px; background: var(--green-light); color: var(--green-dark); padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+    .solved-pick-pill { font-size: 10px; background: var(--green); color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+    .answer-body { font-size: 13px; color: var(--text-sub); line-height: 1.75; margin-bottom: 10px; }
+    .answer-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    /* いいねボタン */
+    .like-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 20px;
+      border: 0.5px solid var(--border-mid);
+      background: transparent; color: var(--text-sub);
+      cursor: pointer; font-family: inherit; font-size: 12px;
+      transition: all 0.15s;
+    }
+    .like-btn:hover { border-color: #E24B4A; color: #A32D2D; background: #FCEBEB; }
+    .like-btn.liked { background: #FCEBEB; border-color: #F09595; color: #A32D2D; font-weight: 500; }
+
+    /* 解決ボタン（出題者のみ） */
+    .resolve-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 20px;
+      border: 0.5px solid var(--green-mid);
+      background: var(--green-light); color: var(--green-dark);
+      cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500;
+      transition: all 0.15s;
+    }
+    .resolve-btn:hover { background: var(--green-mid); }
+    .resolve-btn.resolved { background: var(--green); color: #fff; border-color: var(--green); cursor: default; }
+
+    /* 返信フォーム */
+    .reply-form { margin-top: 14px; border-top: 0.5px solid var(--border); padding-top: 14px; }
+    .reply-row { display: flex; gap: 8px; }
+    .reply-textarea {
+      flex: 1; resize: none; border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-mid);
+      padding: 9px 12px; font-size: 13px; font-family: inherit;
+      color: var(--text); background: var(--bg);
+      line-height: 1.6; min-height: 64px;
+      transition: border-color 0.15s;
+    }
+    .reply-textarea:focus { outline: none; border-color: var(--green); }
+
+    /* 投稿フォーム */
+    .ask-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 16px; }
+    .ask-label { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .ask-selects { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .ask-select { flex: 1; min-width: 120px; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 8px 10px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--bg); cursor: pointer; }
+    .ask-row { display: flex; gap: 8px; }
+    .ask-textarea {
+      flex: 1; resize: none; border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-mid);
+      padding: 10px 12px; font-size: 14px; font-family: inherit;
+      color: var(--text); background: var(--bg);
+      line-height: 1.6; min-height: 72px;
+      transition: border-color 0.15s;
+    }
+    .ask-textarea:focus { outline: none; border-color: var(--green); }
+    .ask-submit {
+      background: var(--green); color: #fff; border: none;
+      border-radius: var(--radius-md); padding: 0 18px;
+      font-size: 14px; font-family: inherit; font-weight: 700;
+      cursor: pointer; align-self: flex-end; height: 42px;
+      white-space: nowrap; transition: background 0.15s;
+    }
+    .ask-submit:hover { background: var(--green-dark); }
+
+    /* ===== PROFILE ===== */
+    .profile-hero { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+    .avatar-lg {
+      width: 58px; height: 58px; border-radius: 50%;
+      background: var(--green); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 700; flex-shrink: 0;
+    }
+    .profile-name { font-size: 20px; font-weight: 700; margin-bottom: 3px; }
+    .profile-role { font-size: 13px; color: var(--text-sub); }
+    .profile-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
+    .pbadge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 9px; border-radius: 20px; border: 0.5px solid; font-weight: 500; }
+    .pb-student  { background: #E6F1FB; color: #185FA5; border-color: #B5D4F4; }
+    .pb-worker   { background: #EEEDFE; color: #534AB7; border-color: #CECBF6; }
+    .pb-it       { background: #EAF3DE; color: #3B6D11; border-color: #C0DD97; }
+    .pb-verified { background: var(--green-light); color: var(--green-dark); border-color: var(--green-mid); }
+    .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .stat-card { background: var(--bg); border-radius: var(--radius-md); padding: 12px; text-align: center; }
+    .stat-val { font-size: 24px; font-weight: 700; }
+    .stat-label { font-size: 11px; color: var(--text-sub); margin-top: 3px; }
+    .private-info-row { font-size: 13px; padding: 8px 0; border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .private-info-row:last-child { border-bottom: none; }
+
+    /* ===== WELCOME BANNER ===== */
+    .welcome-banner {
+      background: var(--green-light); border-radius: var(--radius-lg);
+      padding: 14px 18px; margin-bottom: 20px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .wb-icon { font-size: 20px; color: var(--green-dark); flex-shrink: 0; margin-top: 1px; }
+    .wb-body { font-size: 13px; color: var(--green-deep); line-height: 1.7; }
+    .wb-body strong { font-weight: 700; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .hero-title { font-size: 22px; }
+      .ask-row { flex-direction: column; }
+      .ask-submit { align-self: flex-end; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ======= LANDING ======= -->
+  <div class="page active" id="page-landing">
+    <div class="header">
+      <a class="logo" href="#"><div class="logo-icon"><i class="ti ti-code"></i></div><span class="logo-text">ProgBuddy</span></a>
+      <div class="header-actions">
+        <button class="btn btn-outline btn-sm" onclick="doLogin()">ログイン</button>
+        <button class="btn btn-primary btn-sm" onclick="goPage('page-register')">新規登録</button>
+      </div>
+    </div>
+    <div class="hero">
+      <div class="hero-emoji">💻</div>
+      <div class="hero-title">困ったら聞いて、<br>学んだら教えよう</div>
+      <div class="hero-sub">WiFiのつなぎ方からプログラミングまで。<strong>いいね</strong>で有益な回答を評価し、<strong>出題者だけが解決済みにできる</strong>仕組みで信頼度を保ちます。</div>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="doLogin()"><i class="ti ti-login"></i> デモで試す</button>
+        <button class="btn btn-outline" onclick="goPage('page-register')"><i class="ti ti-user-plus"></i> 新規登録</button>
+      </div>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="fi">🌐</div><div class="ft">オープンQ&A</div><div class="fd">誰でも投稿・閲覧できる公開スペース</div></div>
+      <div class="feature-card"><div class="fi">🔒</div><div class="ft">秘密コミュニティ</div><div class="fd">同じ大学・企業の人だけのプライベートな場</div></div>
+      <div class="feature-card"><div class="fi">🤖</div><div class="ft">AI + 有識者</div><div class="fd">AIがすぐ答えて、仲間が詳しく補足してくれる</div></div>
+      <div class="feature-card"><div class="fi">✅</div><div class="ft">出題者が解決</div><div class="fd">回答が来ても、出題者が認めるまで「未解決」のまま</div></div>
+    </div>
+  </div>
+
+  <!-- ======= REGISTER ======= -->
+  <div class="page" id="page-register">
+    <div class="header">
+      <a class="logo" href="#"><div class="logo-icon"><i class="ti ti-code"></i></div><span class="logo-text">ProgBuddy</span></a>
+      <button class="btn btn-outline btn-sm" onclick="goPage('page-landing')"><i class="ti ti-arrow-left"></i> 戻る</button>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user-plus" style="color:var(--green)"></i> アカウント登録</div>
+      <div class="sep"><div class="sep-line"></div><span class="sep-label sep-public"><i class="ti ti-eye"></i> みんなに公開される情報</span><div class="sep-line"></div></div>
+      <div class="form-row">
+        <div class="form-label">ニックネーム <span class="badge-public">公開</span></div>
+        <input class="form-input" id="reg-nick" type="text" placeholder="例：たろう / ken_dev">
+        <div class="form-hint"><i class="ti ti-info-circle"></i> 本名は使わないことをおすすめします</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">所属カテゴリ <span class="badge-public">公開</span></div>
+        <select class="form-select" id="reg-role" onchange="updateRoleFields()">
+          <option value="">選んでください</option>
+          <option value="student">学生</option>
+          <option value="worker">社会人</option>
+          <option value="it">IT企業</option>
+          <option value="housewife">主婦・主夫</option>
+          <option value="senior">シニア</option>
+          <option value="other">その他</option>
+        </select>
+        <div class="form-hint"><i class="ti ti-info-circle"></i> カテゴリのみ公開。具体名は非公開で別途入力できます</div>
+      </div>
+      <div class="sep"><div class="sep-line"></div><span class="sep-label sep-private"><i class="ti ti-lock"></i> 非公開（コミュニティ参加の認証に使用）</span><div class="sep-line"></div></div>
+      <div class="form-row" id="field-school" style="display:none">
+        <div class="form-label">大学・学校名 <span class="badge-private">非公開</span></div>
+        <input class="form-input" id="reg-school" type="text" placeholder="例：○○大学">
+        <div class="form-hint"><i class="ti ti-lock"></i> 同じ大学の人だけのコミュニティに参加できます</div>
+      </div>
+      <div class="form-row" id="field-dept" style="display:none">
+        <div class="form-label">学部・学科 <span class="badge-private">非公開</span></div>
+        <input class="form-input" id="reg-dept" type="text" placeholder="例：情報工学部 / 経済学部">
+      </div>
+      <div class="form-row" id="field-company" style="display:none">
+        <div class="form-label">企業名 <span class="badge-private">非公開</span></div>
+        <input class="form-input" id="reg-company" type="text" placeholder="例：○○株式会社">
+        <div class="form-hint"><i class="ti ti-lock"></i> 同じ企業の人だけのコミュニティに参加できます</div>
+      </div>
+      <div class="form-row" id="field-deptco" style="display:none">
+        <div class="form-label">部署・チーム <span class="badge-private">非公開</span></div>
+        <input class="form-input" id="reg-deptco" type="text" placeholder="例：開発部 / インフラチーム">
+      </div>
+      <div class="form-row">
+        <div class="form-label">メールアドレス <span class="badge-private">非公開</span></div>
+        <input class="form-input" id="reg-email" type="email" placeholder="example@email.com">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn btn-primary" onclick="doRegister()"><i class="ti ti-check"></i> 登録して始める</button>
+        <button class="btn btn-outline" onclick="goPage('page-landing')">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= MAIN ======= -->
+  <div class="page" id="page-main">
+    <div class="header">
+      <a class="logo" href="#"><div class="logo-icon"><i class="ti ti-code"></i></div><span class="logo-text">ProgBuddy</span></a>
+      <div class="header-actions">
+        <span id="header-nick" style="font-size:12px;color:var(--text-sub);"></span>
+        <div id="header-avatar" style="width:30px;height:30px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;cursor:pointer;" onclick="goTab('profile')"></div>
+        <button class="btn btn-outline btn-sm" onclick="doLogout()">ログアウト</button>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <div class="nav-tab active" id="tab-community" onclick="goTab('community')"><i class="ti ti-layout-grid"></i> コミュニティ</div>
+      <div class="nav-tab" id="tab-qa" onclick="goTab('qa')"><i class="ti ti-messages"></i> Q&A</div>
+      <div class="nav-tab" id="tab-profile" onclick="goTab('profile')"><i class="ti ti-user-circle"></i> プロフィール</div>
+    </div>
+
+    <!-- コミュニティ -->
+    <div id="tab-content-community">
+      <div class="welcome-banner">
+        <i class="ti ti-hand-stop wb-icon"></i>
+        <div class="wb-body"><strong>どんな質問でも大丈夫です。</strong><br>WiFiのつなぎ方・アプリの不具合・プログラミングまで気軽に投稿してください。<strong>🔒マーク</strong>は同じ所属の人だけが入れる秘密コミュニティです。</div>
+      </div>
+      <div class="community-grid" id="community-grid"></div>
+    </div>
+
+    <!-- Q&A -->
+    <div id="tab-content-qa" style="display:none">
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:14px;display:flex;align-items:center;gap:6px;" id="qa-context-label"></div>
+      <div class="ask-card">
+        <div class="ask-label"><i class="ti ti-sparkles" style="color:var(--green)"></i> 困ったことを投稿する</div>
+        <div class="ask-selects">
+          <select class="ask-select" id="post-urgency">
+            <option value="low">緊急度：低め（いつでも）</option>
+            <option value="mid">緊急度：中（今日中）</option>
+            <option value="high">緊急度：高（今すぐ！）</option>
+          </select>
+          <select class="ask-select" id="post-tag">
+            <option value="t-wifi">WiFi・ネット</option>
+            <option value="t-app">アプリ</option>
+            <option value="t-device">スマホ・PC</option>
+            <option value="t-code">プログラミング</option>
+          </select>
+        </div>
+        <div class="ask-row">
+          <textarea class="ask-textarea" id="ask-text" placeholder="困ったことを書いてみて..."></textarea>
+          <button class="ask-submit" onclick="postQuestion()"><i class="ti ti-arrow-up"></i><br>投稿</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" data-f="all"    onclick="filterQA(this,'all')"><i class="ti ti-list"></i> すべて</button>
+        <button class="filter-btn"        data-f="open"   onclick="filterQA(this,'open')"><i class="ti ti-clock"></i> 未解決</button>
+        <button class="filter-btn"        data-f="solved" onclick="filterQA(this,'solved')"><i class="ti ti-circle-check"></i> 解決済み</button>
+        <button class="filter-btn"        data-f="mine"   onclick="filterQA(this,'mine')"><i class="ti ti-user"></i> 自分の質問</button>
+      </div>
+      <div id="qa-list"></div>
+    </div>
+
+    <!-- プロフィール -->
+    <div id="tab-content-profile" style="display:none">
+      <div class="card">
+        <div class="profile-hero">
+          <div class="avatar-lg" id="profile-avatar"></div>
+          <div>
+            <div class="profile-name" id="profile-name"></div>
+            <div class="profile-role" id="profile-role"></div>
+            <div class="profile-badges" id="profile-badges"></div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-sub);background:var(--bg);border-radius:var(--radius-md);padding:10px 12px;line-height:1.6;margin-bottom:12px;">
+          <i class="ti ti-lock"></i> 企業名・大学名・学部は<strong>あなたにしか見えません</strong>。コミュニティ参加の認証にのみ使われます。
+        </div>
+        <div id="profile-private-info"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-bar" style="color:var(--green)"></i> あなたの活動</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-val" id="stat-posts">0</div><div class="stat-label">投稿数</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:#A32D2D" id="stat-likes">0</div><div class="stat-label">もらったいいね</div></div>
+          <div class="stat-card"><div class="stat-val" style="color:var(--green-dark)" id="stat-solved">0</div><div class="stat-label">解決に貢献</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-shield-lock" style="color:#534AB7"></i> プライバシー設定</div>
+        <p style="font-size:13px;color:var(--text-sub);line-height:1.7;">他のユーザーに公開されるのは<strong>「ニックネーム」と「所属カテゴリ」のみ</strong>です。企業名・大学名・学部・メールアドレスは非公開です。</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<div id="toast"><i class="ti ti-check"></i> <span id="toast-msg"></span></div>
+
+<script>
+const ROLE_LABELS = { student:'学生', worker:'社会人', it:'IT企業', housewife:'主婦・主夫', senior:'シニア', other:'その他' };
+const ROLE_ICONS  = { student:'ti-school', worker:'ti-briefcase', it:'ti-device-laptop', housewife:'ti-home', senior:'ti-heart', other:'ti-dots' };
+const ROLE_CLASS  = { student:'rp-student', worker:'rp-worker', it:'rp-it', housewife:'rp-housewife', senior:'rp-senior', other:'rp-student' };
+const PB_CLASS    = { student:'pb-student', worker:'pb-worker', it:'pb-it', housewife:'pb-student', senior:'pb-student', other:'pb-student' };
+const TAG_LABELS  = { 't-wifi':'WiFi', 't-app':'アプリ', 't-device':'スマホ・PC', 't-code':'プログラミング', 't-secret':'限定', 't-new':'新規' };
+
+let currentUser = null;
+let currentCommunity = { id:'open', name:'オープンQ&A' };
+let currentFilter = 'all';
+let nextQAId = 5;
+
+let qaStore = [
+  { id:1, communityId:'open', owner:'さくら🌸', ownerRole:'student', title:'WiFiのつなぎ方がわからない', tag:'t-wifi', urgency:'high', status:'solved', solvedAnswerId:1,
+    answers:[
+      { id:1, nick:'田中先輩', role:'worker', body:'iPhoneなら「設定 → Wi-Fi」から接続できます。パスワードはルーターの裏面に書いてあります。', likes:12, likedByMe:false, time:'2時間前', isAI:false },
+      { id:2, nick:'AI', role:'', body:'AndroidはQRコードでWi-Fiパスワードを共有する方法もあります。設定 → Wi-Fi → 接続済みネットワーク名の歯車アイコンから共有できます。', likes:5, likedByMe:false, time:'2時間前', isAI:true },
+    ]
+  },
+  { id:2, communityId:'open', owner:'けんた', ownerRole:'senior', title:'アプリが急に使えなくなった（アップデートしてない）', tag:'t-app', urgency:'mid', status:'answered', solvedAnswerId:null,
+    answers:[
+      { id:1, nick:'まりこ', role:'housewife', body:'App Storeでアップデートボタンを押してみてください！それで直ることが多いです。', likes:8, likedByMe:false, time:'1日前', isAI:false },
+    ]
+  },
+  { id:3, communityId:'open', owner:'もえ', ownerRole:'student', title:'Pythonのprint文が動かない', tag:'t-code', urgency:'low', status:'open', solvedAnswerId:null, answers:[] },
+  { id:4, communityId:'open', owner:'よしお', ownerRole:'worker', title:'充電器を挿しているのにスマホが充電されない', tag:'t-device', urgency:'high', status:'open', solvedAnswerId:null,
+    answers:[
+      { id:1, nick:'AI', role:'', body:'端子にほこりが詰まっている可能性があります。つまようじで軽く掃除してみてください。また別のケーブルでも試してみると原因が絞れます。', likes:3, likedByMe:false, time:'4時間前', isAI:true },
+    ]
+  },
+];
+
+// ─── ページ遷移 ───
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ─── タブ遷移 ───
+function goTab(tab) {
+  ['community','qa','profile'].forEach(t => {
+    document.getElementById('tab-content-'+t).style.display = t===tab ? 'block' : 'none';
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+  });
+  if (tab==='qa')      renderQAList();
+  if (tab==='profile') renderProfile();
+}
+
+// ─── 登録フォーム ───
+function updateRoleFields() {
+  const r = document.getElementById('reg-role').value;
+  ['field-school','field-dept','field-company','field-deptco'].forEach(id => document.getElementById(id).style.display='none');
+  if (r==='student') { document.getElementById('field-school').style.display='block'; document.getElementById('field-dept').style.display='block'; }
+  else if (r==='worker'||r==='it') { document.getElementById('field-company').style.display='block'; document.getElementById('field-deptco').style.display='block'; }
+}
+
+function doRegister() {
+  const nick  = document.getElementById('reg-nick').value.trim();
+  const role  = document.getElementById('reg-role').value;
+  const email = document.getElementById('reg-email').value.trim();
+  if (!nick||!role||!email) { showToast('ニックネーム・所属・メールは必須です'); return; }
+  currentUser = { nick, role, email,
+    school:  document.getElementById('reg-school').value.trim(),
+    dept:    document.getElementById('reg-dept').value.trim(),
+    company: document.getElementById('reg-company').value.trim(),
+    deptco:  document.getElementById('reg-deptco').value.trim() };
+  initMain(); goPage('page-main'); showToast('ようこそ、'+nick+'さん！');
+}
+
+function doLogin() {
+  currentUser = { nick:'けんた', role:'student', email:'demo@example.com', school:'○○大学', dept:'情報工学部', company:'', deptco:'' };
+  initMain(); goPage('page-main'); showToast('ログインしました！');
+}
+
+function doLogout() { currentUser=null; goPage('page-landing'); }
+
+function initMain() {
+  const u = currentUser;
+  document.getElementById('header-nick').textContent = u.nick;
+  document.getElementById('header-avatar').textContent = u.nick.charAt(0).toUpperCase();
+  renderCommunities();
+  goTab('community');
+}
+
+// ─── コミュニティ ───
+function renderCommunities() {
+  const u = currentUser;
+  const comms = [
+    { id:'open',    name:'オープンQ&A',              desc:'誰でも投稿・閲覧できる', icon:'ci-open',    ic:'ti-world',    members:1240, locked:false },
+    { id:'school',  name: u.school  ? u.school+'コミュニティ'  : '大学コミュニティ',  desc: u.school  ? '同じ大学の人だけ' : '大学名を登録すると参加可能', icon:'ci-school',  ic:'ti-school',   members:u.school?34:null,  locked:!u.school },
+    { id:'dept',    name: u.dept    ? u.dept+'コミュニティ'    : '学部コミュニティ',  desc: u.dept    ? '同じ学部の人だけ' : '学部名を登録すると参加可能', icon:'ci-dept',    ic:'ti-book',     members:u.dept?11:null,    locked:!u.dept },
+    { id:'company', name: u.company ? u.company+'コミュニティ' : '企業コミュニティ',  desc: u.company ? '同じ企業の人だけ' : '企業名を登録すると参加可能', icon:'ci-company', ic:'ti-building', members:u.company?58:null, locked:!u.company },
+  ];
+  const grid = document.getElementById('community-grid');
+  grid.innerHTML = '';
+  comms.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'community-card'+(c.locked?' locked':'');
+    d.innerHTML = `
+      <div class="comm-icon ${c.icon}"><i class="ti ${c.ic}"></i></div>
+      <div class="comm-name">${c.name}</div>
+      <div class="comm-desc">${c.desc}</div>
+      <div style="font-size:11px;color:var(--text-hint);margin-top:5px;">${c.locked?'':c.members?'👥 '+c.members+'人':''}</div>
+      <span class="comm-badge ${c.locked?'cb-locked':'cb-joined'}">${c.locked?'🔒 登録で参加':'参加中'}</span>`;
+    if (!c.locked) d.onclick = () => { currentCommunity=c; goTab('qa'); };
+    grid.appendChild(d);
+  });
+}
+
+// ─── Q&A フィルター ───
+function filterQA(btn, f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.f===f));
+  renderQAList();
+}
+
+// ─── Q&A リスト描画 ───
+function renderQAList() {
+  const label = document.getElementById('qa-context-label');
+  label.innerHTML = `<i class="ti ${currentCommunity.id==='open'?'ti-world':'ti-lock'}"></i> <strong>${currentCommunity.name}</strong>`;
+  let items = qaStore.filter(q => q.communityId===currentCommunity.id);
+  if (currentFilter==='open')   items = items.filter(q => q.status!=='solved');
+  if (currentFilter==='solved') items = items.filter(q => q.status==='solved');
+  if (currentFilter==='mine')   items = items.filter(q => q.owner===currentUser.nick);
+  const list = document.getElementById('qa-list');
+  list.innerHTML = '';
+  if (!items.length) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--text-sub);padding:1rem 0;">まだ質問がありません。最初に投稿してみましょう！</div>';
+    return;
+  }
+  items.slice().reverse().forEach(q => list.appendChild(buildQACard(q)));
+}
+
+// ─── Q&A カード生成 ───
+function buildQACard(q) {
+  const isOwner = currentUser && currentUser.nick===q.owner;
+  const urgMap  = { high:['urg-high','今すぐ！'], mid:['urg-mid','今日中'], low:['urg-low','いつでも'] };
+  const [urgCls, urgLabel] = urgMap[q.urgency]||urgMap.low;
+  const statusPill = q.status==='solved'
+    ? `<span class="status-pill sp-solved"><i class="ti ti-circle-check"></i> 解決済み</span>`
+    : q.answers.length
+      ? `<span class="status-pill sp-answered"><i class="ti ti-message-dots"></i> 回答あり</span>`
+      : `<span class="status-pill sp-open"><i class="ti ti-clock"></i> 未回答</span>`;
+
+  const card = document.createElement('div');
+  card.className = 'qa-card'+(q.status==='solved'?' is-solved':'');
+  card.dataset.qid = q.id;
+
+  const solvedBanner = q.status==='solved'
+    ? `<div class="solved-banner"><i class="ti ti-circle-check"></i> 出題者が解決済みにしました。参考になった回答をチェックしてください。</div>` : '';
+
+  let answersHtml = '';
+  q.answers.forEach(a => {
+    const isSolvePick = q.solvedAnswerId===a.id;
+    answersHtml += `
+      <div class="answer-item">
+        <div class="answer-header">
+          <div class="answer-avatar">${a.nick.charAt(0)}</div>
+          <span class="answer-nick">${a.nick}</span>
+          ${a.isAI ? '<span class="ai-pill"><i class="ti ti-robot"></i> AI</span>' : ''}
+          ${isSolvePick ? '<span class="solved-pick-pill"><i class="ti ti-check"></i> 解決の決め手</span>' : ''}
+          <span class="answer-time">${a.time}</span>
+        </div>
+        <div class="answer-body">${a.body}</div>
+        <div class="answer-actions">
+          <button class="like-btn${a.likedByMe?' liked':''}" onclick="toggleLike(${q.id},${a.id},this)">
+            <i class="ti ${a.likedByMe?'ti-heart-filled':'ti-heart'}"></i>
+            <span>${a.likes}</span> 役に立った
+          </button>
+          ${isOwner && q.status!=='solved'
+            ? `<button class="resolve-btn" onclick="markSolved(${q.id},${a.id})"><i class="ti ti-circle-check"></i> これで解決した！</button>`
+            : ''}
+        </div>
+      </div>`;
+  });
+
+  const replyForm = q.status!=='solved' ? `
+    <div class="reply-form">
+      <div class="reply-row">
+        <textarea class="reply-textarea" data-qid="${q.id}" placeholder="回答を書く..."></textarea>
+        <button class="btn btn-primary btn-sm" style="align-self:flex-end;" onclick="postAnswer(${q.id})"><i class="ti ti-send"></i> 回答</button>
+      </div>
+    </div>` : '';
+
+  card.innerHTML = `
+    <div class="qa-card-top">
+      <div class="qa-title-text" onclick="toggleAnswers(${q.id})">${q.title}</div>
+      <span class="tag ${q.tag}">${TAG_LABELS[q.tag]||q.tag}</span>
+    </div>
+    <div class="qa-meta">
+      ${statusPill}
+      <span class="role-pill ${ROLE_CLASS[q.ownerRole]||'rp-student'}"><i class="ti ${ROLE_ICONS[q.ownerRole]||'ti-user'}"></i> ${q.owner}</span>
+      <span class="${urgCls}">${urgLabel}</span>
+      <span style="color:var(--text-hint)">${q.answers.length}件の回答</span>
+    </div>
+    <div class="answers-section" id="ans-${q.id}">
+      ${solvedBanner}${answersHtml}${replyForm}
+    </div>`;
+  return card;
+}
+
+function toggleAnswers(qid) { document.getElementById('ans-'+qid).classList.toggle('open'); }
+
+function toggleLike(qid, aid, btn) {
+  const q = qaStore.find(x=>x.id===qid);
+  const a = q.answers.find(x=>x.id===aid);
+  a.likedByMe = !a.likedByMe;
+  a.likes += a.likedByMe ? 1 : -1;
+  btn.classList.toggle('liked', a.likedByMe);
+  btn.querySelector('i').className = 'ti '+(a.likedByMe?'ti-heart-filled':'ti-heart');
+  btn.querySelector('span').textContent = a.likes;
+  if (a.likedByMe) showToast('いいね！しました ❤️');
+}
+
+function markSolved(qid, aid) {
+  const q = qaStore.find(x=>x.id===qid);
+  q.status = 'solved'; q.solvedAnswerId = aid;
+  showToast('✅ 解決済みにしました！ありがとうございます');
+  renderQAList();
+  setTimeout(() => { const s=document.getElementById('ans-'+qid); if(s) s.classList.add('open'); }, 50);
+}
+
+function postAnswer(qid) {
+  const ta = document.querySelector(`.reply-textarea[data-qid="${qid}"]`);
+  const body = ta.value.trim();
+  if (!body) { showToast('回答を入力してください'); return; }
+  const q = qaStore.find(x=>x.id===qid);
+  const newId = q.answers.length ? Math.max(...q.answers.map(a=>a.id))+1 : 1;
+  q.answers.push({ id:newId, nick:currentUser.nick, role:currentUser.role, body, likes:0, likedByMe:false, time:'たった今', isAI:false });
+  if (q.status==='open') q.status='answered';
+  showToast('回答を投稿しました！');
+  renderQAList();
+  setTimeout(() => { const s=document.getElementById('ans-'+qid); if(s) s.classList.add('open'); }, 50);
+}
+
+function postQuestion() {
+  const text = document.getElementById('ask-text').value.trim();
+  if (!text) { showToast('内容を入力してください'); return; }
+  qaStore.push({
+    id: nextQAId++, communityId: currentCommunity.id,
+    owner: currentUser.nick, ownerRole: currentUser.role,
+    title: text,
+    tag: document.getElementById('post-tag').value,
+    urgency: document.getElementById('post-urgency').value,
+    status: 'open', solvedAnswerId: null, answers: []
+  });
+  document.getElementById('ask-text').value = '';
+  showToast('質問を投稿しました！');
+  renderQAList();
+}
+
+// ─── プロフィール ───
+function renderProfile() {
+  const u = currentUser;
+  document.getElementById('profile-avatar').textContent = u.nick.charAt(0).toUpperCase();
+  document.getElementById('profile-name').textContent = u.nick;
+  document.getElementById('profile-role').textContent = ROLE_LABELS[u.role]||u.role;
+  const pb = document.getElementById('profile-badges');
+  pb.innerHTML = `<span class="pbadge ${PB_CLASS[u.role]||'pb-student'}"><i class="ti ${ROLE_ICONS[u.role]}"></i> ${ROLE_LABELS[u.role]}</span>`;
+  if (u.school||u.company) pb.innerHTML += `<span class="pbadge pb-verified"><i class="ti ti-shield-check"></i> 所属認証済み</span>`;
+  let priv = '<div style="font-size:12px;color:var(--text-sub);margin-bottom:8px;display:flex;align-items:center;gap:4px;"><i class="ti ti-lock"></i> あなたの非公開情報（本人のみ閲覧可）</div>';
+  if (u.school)  priv += `<div class="private-info-row">🏫 大学 <strong>${u.school}</strong></div>`;
+  if (u.dept)    priv += `<div class="private-info-row">📚 学部 <strong>${u.dept}</strong></div>`;
+  if (u.company) priv += `<div class="private-info-row">🏢 企業 <strong>${u.company}</strong></div>`;
+  if (u.deptco)  priv += `<div class="private-info-row">🗂️ 部署 <strong>${u.deptco}</strong></div>`;
+  if (!u.school&&!u.company) priv += '<div style="font-size:13px;color:var(--text-hint);">具体的な所属は未入力です</div>';
+  document.getElementById('profile-private-info').innerHTML = priv;
+  const myPosts  = qaStore.filter(q=>q.owner===u.nick).length;
+  const myLikes  = qaStore.flatMap(q=>q.answers).filter(a=>a.nick===u.nick).reduce((s,a)=>s+a.likes,0);
+  const mySolved = qaStore.filter(q=>q.solvedAnswerId&&q.answers.find(a=>a.nick===u.nick&&a.id===q.solvedAnswerId)).length;
+  document.getElementById('stat-posts').textContent  = myPosts;
+  document.getElementById('stat-likes').textContent  = myLikes;
+  document.getElementById('stat-solved').textContent = mySolved;
+}
+
+// ─── Toast ───
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
