@@ -3,10 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 Solved — 詰まったら聞いて、わかったら教える</title>
+  <title>404 Solved — 詰まったら聞いて、わかったら教えよう</title>
+  <meta name="description" content="WiFiのつなぎ方からプログラミングまで。AIがすぐ答えて、仲間がさらに補足。助けた人がバッジをもらえる循環型Q&Aアプリ。">
+  <meta property="og:title" content="404 Solved">
+  <meta property="og:description" content="詰まったら聞いて、わかったら教えよう。循環型Q&Aアプリ。">
+  <meta property="og:type" content="website">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231D9E75'/><text y='.9em' font-size='60' x='8'>✅</text></svg>">
+  <!-- PWA manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1D9E75">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="404 Solved">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231D9E75'/><text y='.9em' font-size='60' x='8'>✅</text></svg>">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -15,1131 +26,333 @@
       --bg: #f9f9f8; --surface: #ffffff;
       --border: rgba(0,0,0,0.08); --border-mid: rgba(0,0,0,0.14);
       --text: #1a1a1a; --text-sub: #6b6b6b; --text-hint: #9a9a9a;
-      --radius-md: 8px; --radius-lg: 12px;
-      --gold: #F5A623; --silver: #9B9B9B; --bronze: #C27C4A;
-      --red: #E24B4A; --red-light: #FCEBEB;
+      --radius-md: 8px; --radius-lg: 12px; --radius-xl: 20px;
     }
-    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    .app { max-width: 720px; margin: 0 auto; padding: 0 16px 80px; }
-    .page { display: none; }
-    .page.active { display: block; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); }
 
-    .header { position: sticky; top: 0; z-index: 100; background: rgba(249,249,248,0.92); backdrop-filter: blur(10px); border-bottom: 0.5px solid var(--border); padding: 12px 0; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
-    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .logo-icon { width: 34px; height: 34px; border-radius: 10px; background: var(--green); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 17px; }
-    .logo-text { font-size: 18px; font-weight: 700; color: var(--text); }
-    .header-actions { display: flex; gap: 8px; align-items: center; }
-
-    /* 通知ベル */
-    .notif-btn { position: relative; width: 34px; height: 34px; border-radius: 50%; border: 0.5px solid var(--border-mid); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: var(--text-sub); transition: all 0.15s; }
-    .notif-btn:hover { border-color: var(--green); color: var(--green-dark); }
-    .notif-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 1.5px solid var(--bg); display: none; }
-    .notif-dot.show { display: block; }
-
-    /* 通知パネル */
-    .notif-panel { position: fixed; top: 60px; right: 16px; width: 320px; max-width: calc(100vw - 32px); background: var(--surface); border: 0.5px solid var(--border-mid); border-radius: var(--radius-lg); box-shadow: 0 8px 30px rgba(0,0,0,0.12); z-index: 200; display: none; max-height: 400px; overflow-y: auto; }
-    .notif-panel.open { display: block; }
-    .notif-header { padding: 12px 16px; border-bottom: 0.5px solid var(--border); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-    .notif-clear { font-size: 11px; color: var(--green-dark); cursor: pointer; font-weight: 500; }
-    .notif-item { padding: 12px 16px; border-bottom: 0.5px solid var(--border); display: flex; gap: 10px; align-items: flex-start; }
-    .notif-item:last-child { border-bottom: none; }
-    .notif-item.unread { background: var(--green-light); }
-    .notif-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; flex-shrink: 0; }
-    .notif-body { font-size: 12px; color: var(--text-sub); line-height: 1.5; flex: 1; }
-    .notif-body strong { color: var(--text); }
-    .notif-time { font-size: 10px; color: var(--text-hint); margin-top: 3px; }
-    .notif-empty { padding: 24px 16px; text-align: center; font-size: 13px; color: var(--text-hint); }
-
-    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-md); font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(249,249,248,0.92); backdrop-filter: blur(12px); border-bottom: 0.5px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--green); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+    .nav-logo-text { font-size: 18px; font-weight: 700; color: var(--text); }
+    .nav-actions { display: flex; gap: 8px; align-items: center; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: var(--radius-md); font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; text-decoration: none; }
     .btn-primary { background: var(--green); color: #fff; }
     .btn-primary:hover { background: var(--green-dark); }
     .btn-outline { background: transparent; border: 0.5px solid var(--border-mid); color: var(--text-sub); }
     .btn-outline:hover { border-color: var(--green); color: var(--green-dark); }
-    .btn-sm { padding: 5px 12px; font-size: 12px; }
-    .btn-danger { background: var(--red-light); color: var(--red); border: 0.5px solid #F09595; }
-    .btn-danger:hover { background: #f9d0d0; }
-    .btn:disabled { opacity: 0.5; cursor: default; }
+    .btn-lg { padding: 14px 28px; font-size: 15px; border-radius: var(--radius-lg); }
+    .btn-xl { padding: 16px 36px; font-size: 16px; border-radius: var(--radius-lg); font-weight: 700; }
 
-    .nav-tabs { display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 20px; }
-    .nav-tab { flex: 1; padding: 10px 4px; text-align: center; font-size: 12px; font-weight: 500; color: var(--text-sub); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.12s; display: flex; align-items: center; justify-content: center; gap: 4px; }
-    .nav-tab.active { color: var(--green-dark); border-bottom-color: var(--green); }
-    .nav-tab i { font-size: 15px; }
+    /* HERO */
+    .hero { max-width: 900px; margin: 0 auto; padding: 80px 24px 60px; text-align: center; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green-dark); font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 20px; margin-bottom: 24px; }
+    .hero-title { font-size: clamp(32px, 6vw, 60px); font-weight: 900; line-height: 1.15; margin-bottom: 20px; letter-spacing: -0.02em; }
+    .hero-title .highlight { color: var(--green); position: relative; }
+    .hero-sub { font-size: clamp(15px, 2.5vw, 18px); color: var(--text-sub); line-height: 1.8; max-width: 520px; margin: 0 auto 36px; }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+    .hero-stats { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+    .hero-stat { text-align: center; }
+    .hero-stat-val { font-size: 28px; font-weight: 900; color: var(--green-dark); }
+    .hero-stat-label { font-size: 12px; color: var(--text-hint); margin-top: 2px; }
 
-    .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 12px; }
-    .card-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+    /* MOCKUP */
+    .mockup-section { background: linear-gradient(180deg, var(--bg) 0%, var(--green-light) 100%); padding: 60px 24px; }
+    .mockup-wrap { max-width: 480px; margin: 0 auto; }
+    .mockup { background: var(--surface); border-radius: 24px; box-shadow: 0 24px 80px rgba(0,0,0,0.12); overflow: hidden; border: 0.5px solid var(--border); }
+    .mockup-bar { background: #1a1a1a; height: 36px; display: flex; align-items: center; padding: 0 16px; gap: 6px; }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mockup-content { padding: 20px; }
+    .mock-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 0.5px solid var(--border); }
+    .mock-logo { width: 28px; height: 28px; border-radius: 8px; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .mock-title { font-size: 14px; font-weight: 700; }
+    .mock-qa { background: var(--bg); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 10px; border: 0.5px solid var(--border); }
+    .mock-qa-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .mock-qa-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+    .mock-tag { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+    .mt-code { background: #E6F1FB; color: #185FA5; }
+    .mt-wifi { background: var(--green-light); color: var(--green-dark); }
+    .mt-solved { background: var(--green-light); color: var(--green-deep); }
+    .mt-open  { background: #FAEEDA; color: #854F0B; }
+    .mock-ai { background: var(--green-light); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 10px; display: flex; gap: 8px; align-items: flex-start; }
+    .mock-ai-icon { width: 24px; height: 24px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+    .mock-ai-body { font-size: 11px; color: var(--green-deep); line-height: 1.6; }
+    .mock-ai-badge { font-size: 10px; background: var(--green); color: #fff; padding: 1px 6px; border-radius: 10px; margin-bottom: 4px; display: inline-block; }
 
-    .form-row { margin-bottom: 14px; }
-    .form-label { font-size: 12px; color: var(--text-sub); margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
-    .badge-public  { font-size: 10px; background: var(--green-light); color: var(--green-dark); padding: 2px 7px; border-radius: 10px; }
-    .badge-private { font-size: 10px; background: #EEEDFE; color: #534AB7; padding: 2px 7px; border-radius: 10px; }
-    .form-input, .form-select { width: 100%; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 9px 12px; font-size: 14px; font-family: inherit; color: var(--text); background: var(--bg); transition: border-color 0.15s; }
-    .form-input:focus, .form-select:focus { outline: none; border-color: var(--green); }
-    .form-hint { font-size: 11px; color: var(--text-hint); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-    .sep { display: flex; align-items: center; gap: 8px; margin: 18px 0 14px; }
-    .sep-line { flex: 1; height: 0.5px; background: var(--border); }
-    .sep-label { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
-    .sep-public  { background: var(--green-light); color: var(--green-dark); }
-    .sep-private { background: #EEEDFE; color: #534AB7; }
+    /* FEATURES */
+    .features { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
+    .section-eyebrow { font-size: 12px; font-weight: 700; color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .section-title { font-size: clamp(24px, 4vw, 36px); font-weight: 900; margin-bottom: 12px; line-height: 1.2; }
+    .section-sub { font-size: 15px; color: var(--text-sub); line-height: 1.7; max-width: 500px; margin-bottom: 48px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 16px; }
+    .feature-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-xl); padding: 24px; transition: box-shadow 0.2s; }
+    .feature-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.07); }
+    .feature-icon { width: 48px; height: 48px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 14px; }
+    .fi-green   { background: var(--green-light); }
+    .fi-blue    { background: #E6F1FB; }
+    .fi-orange  { background: #FFF8E7; }
+    .fi-purple  { background: #EEEDFE; }
+    .fi-red     { background: #FCEBEB; }
+    .fi-teal    { background: #E0F7F4; }
+    .feature-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .feature-desc { font-size: 13px; color: var(--text-sub); line-height: 1.7; }
 
-    /* 認証タブ */
-    .auth-tabs { display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 20px; }
-    .auth-tab { flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 500; color: var(--text-sub); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.12s; }
-    .auth-tab.active { color: var(--green-dark); border-bottom-color: var(--green); }
+    /* HOW IT WORKS */
+    .how { background: var(--green-light); padding: 80px 24px; }
+    .how-inner { max-width: 700px; margin: 0 auto; }
+    .steps { display: flex; flex-direction: column; gap: 0; margin-top: 40px; }
+    .step { display: flex; gap: 20px; padding-bottom: 32px; position: relative; }
+    .step:not(:last-child)::before { content:''; position:absolute; left:19px; top:42px; bottom:0; width:2px; background: var(--green-mid); }
+    .step-num { width: 40px; height: 40px; border-radius: 50%; background: var(--green); color: #fff; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; }
+    .step-body { padding-top: 8px; }
+    .step-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .step-desc { font-size: 13px; color: var(--green-deep); line-height: 1.7; }
 
-    .auth-error { background: var(--red-light); border: 0.5px solid #F09595; border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px; color: var(--red); margin-bottom: 12px; display: none; align-items: center; gap: 8px; }
-    .auth-error.show { display: flex; }
-    .auth-success { background: var(--green-light); border: 0.5px solid var(--green-mid); border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px; color: var(--green-deep); margin-bottom: 12px; display: none; align-items: center; gap: 8px; }
-    .auth-success.show { display: flex; }
+    /* VERSIONS */
+    .versions { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
+    .version-list { display: flex; flex-direction: column; gap: 10px; }
+    .version-item { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; }
+    .version-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+    .vb-done    { background: var(--green-light); color: var(--green-dark); }
+    .vb-current { background: var(--green); color: #fff; }
+    .version-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .version-desc  { font-size: 12px; color: var(--text-sub); line-height: 1.5; }
 
-    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a1a; color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: transform 0.3s ease; z-index: 9999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-    #toast.show { transform: translateX(-50%) translateY(0); }
+    /* CTA */
+    .cta { background: var(--green); padding: 80px 24px; text-align: center; }
+    .cta-title { font-size: clamp(24px, 4vw, 40px); font-weight: 900; color: #fff; margin-bottom: 12px; line-height: 1.2; }
+    .cta-sub { font-size: 15px; color: rgba(255,255,255,0.8); margin-bottom: 32px; }
+    .btn-white { background: #fff; color: var(--green-dark); }
+    .btn-white:hover { background: var(--green-light); }
+    .btn-white-outline { background: transparent; border: 1.5px solid rgba(255,255,255,0.5); color: #fff; }
+    .btn-white-outline:hover { background: rgba(255,255,255,0.1); }
 
-    /* 削除確認モーダル */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 500; display: none; align-items: center; justify-content: center; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 24px; max-width: 340px; width: calc(100% - 32px); }
-    .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-    .modal-body { font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 20px; }
-    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    /* FOOTER */
+    footer { background: #1a1a1a; color: rgba(255,255,255,0.6); padding: 32px 24px; text-align: center; font-size: 12px; }
+    footer strong { color: #fff; }
 
-    /* バッジポップアップ */
-    .badge-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); background: var(--surface); border-radius: var(--radius-lg); padding: 28px 36px; text-align: center; z-index: 9998; box-shadow: 0 20px 60px rgba(0,0,0,0.2); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); border: 2px solid var(--gold); min-width: 260px; }
-    .badge-popup.show { transform: translate(-50%,-50%) scale(1); }
-    .badge-popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9997; display: none; }
-    .badge-popup-overlay.show { display: block; }
-    .badge-popup-emoji { font-size: 56px; margin-bottom: 12px; }
-    .badge-popup-title { font-size: 13px; color: var(--text-sub); margin-bottom: 6px; }
-    .badge-popup-name { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-    .badge-popup-desc { font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 16px; }
+    /* PWA install banner */
+    #pwa-banner { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 0.5px solid var(--border-mid); border-radius: var(--radius-lg); padding: 14px 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); z-index: 999; display: flex; align-items: center; gap: 12px; max-width: 360px; width: calc(100% - 32px); }
+    #pwa-banner.show { display: flex; }
+    #pwa-banner-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--green); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; flex-shrink: 0; }
+    #pwa-banner-body { flex: 1; }
+    #pwa-banner-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    #pwa-banner-sub { font-size: 11px; color: var(--text-sub); }
+    #pwa-banner-close { font-size: 18px; color: var(--text-hint); cursor: pointer; flex-shrink: 0; }
 
-    /* ランキング */
-    .rank-list { display: flex; flex-direction: column; gap: 8px; }
-    .rank-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg); border-radius: var(--radius-md); border: 0.5px solid var(--border); }
-    .rank-item.rank-1 { background: #FFFBEB; border-color: var(--gold); }
-    .rank-item.rank-2 { background: #F8F8F8; border-color: var(--silver); }
-    .rank-item.rank-3 { background: #FDF6F0; border-color: var(--bronze); }
-    .rank-num { font-size: 18px; font-weight: 700; width: 28px; text-align: center; flex-shrink: 0; }
-    .rank-1 .rank-num { color: var(--gold); }
-    .rank-2 .rank-num { color: var(--silver); }
-    .rank-3 .rank-num { color: var(--bronze); }
-    .rank-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
-    .rank-info { flex: 1; min-width: 0; }
-    .rank-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .rank-sub { font-size: 11px; color: var(--text-sub); }
-    .rank-score { font-size: 18px; font-weight: 700; color: var(--green-dark); text-align: right; flex-shrink: 0; }
-    .rank-score-label { font-size: 10px; color: var(--text-hint); }
-
-    .badge-chip { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; border: 0.5px solid; }
-    .bc-beginner  { background: #E6F1FB; color: #185FA5; border-color: #B5D4F4; }
-    .bc-helper    { background: var(--green-light); color: var(--green-dark); border-color: var(--green-mid); }
-    .bc-senior    { background: #FFF8E7; color: #B7791F; border-color: var(--gold); }
-    .bc-expert    { background: #EEEDFE; color: #534AB7; border-color: #CECBF6; }
-    .bc-legend    { background: var(--red-light); color: #A32D2D; border-color: #F09595; }
-    .bc-solver    { background: #EAF3DE; color: #3B6D11; border-color: #C0DD97; }
-
-    .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 10px; }
-    .badge-card { background: var(--bg); border-radius: var(--radius-md); padding: 14px; text-align: center; border: 0.5px solid var(--border); }
-    .badge-card.earned { border-color: var(--gold); background: #FFFBEB; }
-    .badge-card.locked { opacity: 0.4; }
-    .badge-card-emoji { font-size: 28px; margin-bottom: 6px; }
-    .badge-card-name { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
-    .badge-card-desc { font-size: 10px; color: var(--text-sub); line-height: 1.4; }
-    .badge-card-status { font-size: 10px; margin-top: 5px; font-weight: 500; }
-    .badge-card.earned .badge-card-status { color: var(--gold); }
-    .badge-card.locked .badge-card-status { color: var(--text-hint); }
-
-    .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 10px; margin-bottom: 16px; }
-    .community-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px; cursor: pointer; transition: all 0.15s; position: relative; }
-    .community-card:hover:not(.locked) { border-color: var(--green); box-shadow: 0 2px 10px rgba(29,158,117,0.08); }
-    .community-card.locked { opacity: 0.5; cursor: not-allowed; }
-    .comm-icon { width: 38px; height: 38px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
-    .ci-open { background: var(--green-light); color: var(--green-dark); }
-    .ci-school { background: #E6F1FB; color: #185FA5; }
-    .ci-dept { background: #FBEAF0; color: #993556; }
-    .ci-company { background: #EEEDFE; color: #534AB7; }
-    .comm-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
-    .comm-desc { font-size: 11px; color: var(--text-sub); line-height: 1.4; }
-    .comm-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; padding: 2px 7px; border-radius: 10px; }
-    .cb-joined { background: var(--green-light); color: var(--green-dark); }
-    .cb-locked { background: #f1f0ec; color: var(--text-hint); }
-
-    .search-bar { display: flex; gap: 8px; margin-bottom: 14px; }
-    .search-input { flex: 1; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 9px 14px; font-size: 14px; font-family: inherit; color: var(--text); background: var(--surface); transition: border-color 0.15s; }
-    .search-input:focus { outline: none; border-color: var(--green); }
-    .sort-select { border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 9px 10px; font-size: 12px; font-family: inherit; color: var(--text-sub); background: var(--surface); cursor: pointer; }
-
-    .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-    .filter-btn { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--border-mid); background: var(--surface); color: var(--text-sub); cursor: pointer; font-family: inherit; transition: all 0.12s; display: flex; align-items: center; gap: 4px; }
-    .filter-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
-
-    .qa-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 18px; margin-bottom: 10px; }
-    .qa-card.is-solved { border-left: 3px solid var(--green); }
-    .qa-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 8px; }
-    .qa-title-text { font-size: 14px; font-weight: 700; line-height: 1.5; flex: 1; cursor: pointer; color: var(--text); }
-    .qa-title-text:hover { color: var(--green-dark); }
-    .qa-title-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-    .tag { font-size: 10px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; font-weight: 500; }
-    .t-wifi   { background: var(--green-light); color: var(--green-deep); }
-    .t-app    { background: #FAEEDA; color: #633806; }
-    .t-device { background: #EAF3DE; color: #3B6D11; }
-    .t-code   { background: #E6F1FB; color: #185FA5; }
-    .delete-btn { width: 24px; height: 24px; border-radius: 50%; border: none; background: transparent; color: var(--text-hint); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s; }
-    .delete-btn:hover { background: var(--red-light); color: var(--red); }
-
-    .qa-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 11px; color: var(--text-sub); margin-bottom: 8px; }
-    .status-pill { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-    .sp-open     { background: #FAEEDA; color: #854F0B; }
-    .sp-answered { background: #E6F1FB; color: #185FA5; }
-    .sp-solved   { background: var(--green-light); color: var(--green-deep); }
-    .role-pill { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 20px; border: 0.5px solid; font-size: 11px; }
-    .rp-student   { background: #E6F1FB; color: #185FA5; border-color: #B5D4F4; }
-    .rp-worker    { background: #EEEDFE; color: #534AB7; border-color: #CECBF6; }
-    .rp-it        { background: #EAF3DE; color: #3B6D11; border-color: #C0DD97; }
-    .rp-housewife { background: #FBEAF0; color: #993556; border-color: #F4C0D1; }
-    .rp-senior    { background: #FAEEDA; color: #854F0B; border-color: #FAC775; }
-    .urg-high { background: var(--red-light); color: #A32D2D; padding: 2px 7px; border-radius: 20px; font-size: 11px; }
-    .urg-mid  { background: #FAEEDA; color: #854F0B; padding: 2px 7px; border-radius: 20px; font-size: 11px; }
-    .urg-low  { background: #EAF3DE; color: #3B6D11; padding: 2px 7px; border-radius: 20px; font-size: 11px; }
-
-    .qa-images { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-    .qa-img-thumb { width: 72px; height: 72px; border-radius: var(--radius-md); object-fit: cover; border: 0.5px solid var(--border); cursor: pointer; }
-
-    .answers-section { display: none; border-top: 0.5px solid var(--border); padding-top: 14px; margin-top: 4px; }
-    .answers-section.open { display: block; }
-    .solved-banner { background: var(--green-light); border-radius: var(--radius-md); padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--green-deep); font-weight: 500; }
-    .answer-item { padding: 10px 0; border-bottom: 0.5px solid var(--border); }
-    .answer-item:last-of-type { border-bottom: none; }
-    .answer-header { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
-    .answer-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--bg); border: 0.5px solid var(--border-mid); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--text-sub); flex-shrink: 0; }
-    .answer-nick { font-size: 13px; font-weight: 700; }
-    .answer-time { font-size: 11px; color: var(--text-hint); }
-    .ai-pill { font-size: 10px; background: var(--green-light); color: var(--green-dark); padding: 2px 7px; border-radius: 10px; font-weight: 500; }
-    .solved-pick-pill { font-size: 10px; background: var(--green); color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 500; }
-    .answer-body { font-size: 13px; color: var(--text-sub); line-height: 1.75; margin-bottom: 10px; white-space: pre-wrap; }
-    .answer-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-
-    /* スレッド返信 */
-    .thread-replies { margin-top: 8px; margin-left: 20px; border-left: 2px solid var(--border); padding-left: 12px; }
-    .thread-reply { padding: 8px 0; border-bottom: 0.5px solid var(--border); }
-    .thread-reply:last-child { border-bottom: none; }
-    .thread-reply-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-    .thread-reply-avatar { width: 20px; height: 20px; border-radius: 50%; background: var(--bg); border: 0.5px solid var(--border-mid); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--text-sub); flex-shrink: 0; }
-    .thread-reply-nick { font-size: 12px; font-weight: 700; }
-    .thread-reply-time { font-size: 10px; color: var(--text-hint); }
-    .thread-reply-body { font-size: 12px; color: var(--text-sub); line-height: 1.6; }
-    .reply-to-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--green-dark); cursor: pointer; padding: 3px 8px; border-radius: 20px; border: 0.5px solid var(--green-mid); background: var(--green-light); font-family: inherit; transition: all 0.12s; }
-    .reply-to-btn:hover { background: var(--green-mid); }
-
-    /* スレッド返信フォーム */
-    .thread-reply-form { margin-top: 8px; margin-left: 20px; border-left: 2px solid var(--green-mid); padding-left: 12px; display: none; }
-    .thread-reply-form.open { display: block; }
-    .thread-reply-input { width: 100%; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 7px 10px; font-size: 12px; font-family: inherit; color: var(--text); background: var(--bg); resize: none; min-height: 52px; line-height: 1.5; transition: border-color 0.15s; }
-    .thread-reply-input:focus { outline: none; border-color: var(--green); }
-    .thread-reply-actions { display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end; }
-
-    .ai-thinking { display: flex; align-items: center; gap: 8px; padding: 12px 0; font-size: 13px; color: var(--text-sub); }
-    .ai-thinking-dots span { animation: blink 1.4s infinite; }
-    .ai-thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .ai-thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes blink { 0%,80%,100%{opacity:0} 40%{opacity:1} }
-
-    .like-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--border-mid); background: transparent; color: var(--text-sub); cursor: pointer; font-family: inherit; font-size: 12px; transition: all 0.15s; }
-    .like-btn:hover { border-color: #E24B4A; color: #A32D2D; background: var(--red-light); }
-    .like-btn.liked { background: var(--red-light); border-color: #F09595; color: #A32D2D; font-weight: 500; }
-    .resolve-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--green-mid); background: var(--green-light); color: var(--green-dark); cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500; transition: all 0.15s; }
-    .resolve-btn:hover { background: var(--green-mid); }
-    .thanks-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--gold); background: #FFF8E7; color: #B7791F; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500; transition: all 0.15s; }
-    .thanks-btn:hover { background: #FEF3C7; }
-    .thanks-btn.thanked { background: var(--gold); color: #fff; border-color: var(--gold); cursor: default; }
-
-    .reply-form { margin-top: 14px; border-top: 0.5px solid var(--border); padding-top: 14px; }
-    .reply-row { display: flex; gap: 8px; }
-    .reply-textarea { flex: 1; resize: none; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 9px 12px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--bg); line-height: 1.6; min-height: 64px; transition: border-color 0.15s; }
-    .reply-textarea:focus { outline: none; border-color: var(--green); }
-
-    .ask-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 16px; }
-    .ask-label { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .ask-selects { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-    .ask-select { flex: 1; min-width: 120px; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 8px 10px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--bg); cursor: pointer; }
-    .ask-row { display: flex; gap: 8px; }
-    .ask-textarea { flex: 1; resize: none; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--text); background: var(--bg); line-height: 1.6; min-height: 72px; transition: border-color 0.15s; }
-    .ask-textarea:focus { outline: none; border-color: var(--green); }
-    .ask-submit { background: var(--green); color: #fff; border: none; border-radius: var(--radius-md); padding: 0 18px; font-size: 14px; font-family: inherit; font-weight: 700; cursor: pointer; align-self: flex-end; height: 42px; white-space: nowrap; transition: background 0.15s; }
-    .ask-submit:hover { background: var(--green-dark); }
-    .ask-submit:disabled { opacity: 0.5; cursor: default; }
-
-    .upload-area { border: 1.5px dashed var(--border-mid); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
-    .upload-area:hover { border-color: var(--green); background: #E1F5EE22; }
-    .upload-area.dragover { border-color: var(--green); background: #E1F5EE33; }
-    .upload-text { font-size: 13px; color: var(--text-sub); }
-    .upload-text span { color: var(--green); font-weight: 500; }
-    input[type=file] { display: none; }
-    .preview-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-    .preview-item { position: relative; width: 68px; height: 68px; border-radius: var(--radius-md); overflow: hidden; border: 0.5px solid var(--border-mid); }
-    .preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .preview-remove { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff; border: none; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
-
-    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; z-index: 9999; }
-    .lightbox.open { display: flex; }
-    .lightbox img { max-width: 92%; max-height: 88vh; border-radius: var(--radius-lg); display: block; }
-    .lightbox-close { position: fixed; top: 16px; right: 20px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; }
-
-    .profile-hero { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
-    .avatar-lg { width: 58px; height: 58px; border-radius: 50%; background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; flex-shrink: 0; }
-    .profile-name { font-size: 20px; font-weight: 700; margin-bottom: 3px; }
-    .profile-role-text { font-size: 13px; color: var(--text-sub); }
-    .profile-badges-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
-    .pbadge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 9px; border-radius: 20px; border: 0.5px solid; font-weight: 500; }
-    .pb-student  { background: #E6F1FB; color: #185FA5; border-color: #B5D4F4; }
-    .pb-worker   { background: #EEEDFE; color: #534AB7; border-color: #CECBF6; }
-    .pb-it       { background: #EAF3DE; color: #3B6D11; border-color: #C0DD97; }
-    .pb-verified { background: var(--green-light); color: var(--green-dark); border-color: var(--green-mid); }
-    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
-    .stat-card { background: var(--bg); border-radius: var(--radius-md); padding: 10px; text-align: center; }
-    .stat-val { font-size: 22px; font-weight: 700; }
-    .stat-label { font-size: 10px; color: var(--text-sub); margin-top: 3px; }
-
-    .welcome-banner { background: var(--green-light); border-radius: var(--radius-lg); padding: 14px 18px; margin-bottom: 20px; display: flex; gap: 12px; align-items: flex-start; }
-    .wb-icon { font-size: 20px; color: var(--green-dark); flex-shrink: 0; margin-top: 1px; }
-    .wb-body { font-size: 13px; color: var(--green-deep); line-height: 1.7; }
-    .wb-body strong { font-weight: 700; }
-
-    @media (max-width: 480px) {
-      .stats-grid { grid-template-columns: repeat(2,1fr); }
-      .ask-row { flex-direction: column; }
-      .notif-panel { right: 8px; width: calc(100vw - 16px); }
+    @media (max-width: 600px) {
+      nav { padding: 12px 16px; }
+      .hero { padding: 48px 16px 40px; }
+      .hero-stats { gap: 20px; }
+      .features, .versions { padding: 60px 16px; }
+      .how { padding: 60px 16px; }
+      .cta { padding: 60px 16px; }
     }
   </style>
 </head>
 <body>
-<div class="app">
 
-  <!-- LANDING -->
-  <div class="page active" id="page-landing">
-    <div class="header">
-      <a class="logo" href="#"><div class="logo-icon">✅</div><span class="logo-text">404 Solved</span></a>
-      <div class="header-actions">
-        <button class="btn btn-outline btn-sm" onclick="switchAuthTab('login'); goPage('page-auth')">ログイン</button>
-        <button class="btn btn-primary btn-sm" onclick="switchAuthTab('register'); goPage('page-auth')">新規登録</button>
-      </div>
-    </div>
-    <div style="text-align:center;padding:3rem 0 2rem;">
-      <div style="font-size:52px;margin-bottom:16px;">✅</div>
-      <div style="font-size:26px;font-weight:700;margin-bottom:10px;line-height:1.3;">詰まったら聞いて、<br>わかったら教えよう</div>
-      <div style="font-size:14px;color:var(--text-sub);line-height:1.8;max-width:400px;margin:0 auto 28px;">WiFiのつなぎ方からプログラミングまで。AIがすぐ答えて、仲間がさらに補足。助けた人がバッジをもらえる循環型コミュニティ。</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="doLogin()"><i class="ti ti-login"></i> デモで試す</button>
-        <button class="btn btn-outline" onclick="switchAuthTab('register'); goPage('page-auth')"><i class="ti ti-user-plus"></i> 新規登録</button>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
-      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">🤖</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">AI即答</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">質問するとClaudeがすぐ回答</div></div>
-      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">💬</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">スレッド返信</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">回答に直接返信できる</div></div>
-      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">🏆</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">ランキング</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">助けた数で順位が上がる</div></div>
-      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">🔔</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">通知</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">回答が来たらすぐわかる</div></div>
-    </div>
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">✅</div>
+    <span class="nav-logo-text">404 Solved</span>
+  </a>
+  <div class="nav-actions">
+    <a class="btn btn-outline" href="app.html">ログイン</a>
+    <a class="btn btn-primary" href="app.html">無料で始める</a>
   </div>
+</nav>
 
-  <!-- AUTH -->
-  <div class="page" id="page-auth">
-    <div class="header">
-      <a class="logo" href="#"><div class="logo-icon">✅</div><span class="logo-text">404 Solved</span></a>
-      <button class="btn btn-outline btn-sm" onclick="goPage('page-landing')"><i class="ti ti-arrow-left"></i> 戻る</button>
-    </div>
-    <div class="auth-tabs">
-      <div class="auth-tab active" id="auth-tab-login"    onclick="switchAuthTab('login')">ログイン</div>
-      <div class="auth-tab"        id="auth-tab-register" onclick="switchAuthTab('register')">新規登録</div>
-      <div class="auth-tab"        id="auth-tab-reset"    onclick="switchAuthTab('reset')">パスワードを忘れた</div>
-    </div>
-
-    <!-- ログイン -->
-    <div id="auth-login-form">
-      <div class="card">
-        <div class="card-title"><i class="ti ti-login" style="color:var(--green)"></i> ログイン</div>
-        <div class="auth-error" id="login-error"><i class="ti ti-alert-circle"></i> <span id="login-error-msg"></span></div>
-        <div class="form-row"><div class="form-label">メールアドレス</div><input class="form-input" id="login-email" type="email" placeholder="example@email.com"></div>
-        <div class="form-row"><div class="form-label">パスワード</div><input class="form-input" id="login-password" type="password" placeholder="••••••••"></div>
-        <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="doLogin()"><i class="ti ti-login"></i> ログイン</button>
-          <button class="btn btn-outline" onclick="switchAuthTab('reset')" style="font-size:12px;">パスワードを忘れた</button>
-        </div>
-        <div style="margin-top:14px;font-size:12px;color:var(--text-sub);">アカウントをお持ちでない方は <span style="color:var(--green-dark);cursor:pointer;font-weight:500;" onclick="switchAuthTab('register')">新規登録</span></div>
-      </div>
-    </div>
-
-    <!-- 新規登録 -->
-    <div id="auth-register-form" style="display:none">
-      <div class="card">
-        <div class="card-title"><i class="ti ti-user-plus" style="color:var(--green)"></i> アカウント登録</div>
-        <div class="auth-error"   id="register-error"  ><i class="ti ti-alert-circle"></i> <span id="register-error-msg"></span></div>
-        <div class="auth-success" id="register-success"><i class="ti ti-mail"></i> <span id="register-success-msg"></span></div>
-        <div class="sep"><div class="sep-line"></div><span class="sep-label sep-public"><i class="ti ti-eye"></i> みんなに公開される情報</span><div class="sep-line"></div></div>
-        <div class="form-row"><div class="form-label">ニックネーム <span class="badge-public">公開</span></div><input class="form-input" id="reg-nick" type="text" placeholder="例：たろう / ken_dev"><div class="form-hint"><i class="ti ti-info-circle"></i> 本名は使わないことをおすすめします</div></div>
-        <div class="form-row">
-          <div class="form-label">所属カテゴリ <span class="badge-public">公開</span></div>
-          <select class="form-select" id="reg-role" onchange="updateRoleFields()">
-            <option value="">選んでください</option>
-            <option value="student">学生</option>
-            <option value="worker">社会人</option>
-            <option value="it">IT企業</option>
-            <option value="housewife">主婦・主夫</option>
-            <option value="senior">シニア</option>
-            <option value="other">その他</option>
-          </select>
-        </div>
-        <div class="sep"><div class="sep-line"></div><span class="sep-label sep-private"><i class="ti ti-lock"></i> 非公開（コミュニティ認証用）</span><div class="sep-line"></div></div>
-        <div class="form-row" id="field-school" style="display:none"><div class="form-label">大学名 <span class="badge-private">非公開</span></div><input class="form-input" id="reg-school" type="text" placeholder="例：○○大学"></div>
-        <div class="form-row" id="field-dept"   style="display:none"><div class="form-label">学部 <span class="badge-private">非公開</span></div><input class="form-input" id="reg-dept" type="text" placeholder="例：情報工学部"></div>
-        <div class="form-row" id="field-company" style="display:none"><div class="form-label">企業名 <span class="badge-private">非公開</span></div><input class="form-input" id="reg-company" type="text" placeholder="例：○○株式会社"></div>
-        <div class="form-row" id="field-deptco" style="display:none"><div class="form-label">部署 <span class="badge-private">非公開</span></div><input class="form-input" id="reg-deptco" type="text" placeholder="例：開発部"></div>
-        <div class="form-row"><div class="form-label">メールアドレス <span class="badge-private">非公開</span></div><input class="form-input" id="reg-email" type="email" placeholder="example@email.com"></div>
-        <div class="form-row"><div class="form-label">パスワード <span class="badge-private">非公開</span></div><input class="form-input" id="reg-password" type="password" placeholder="8文字以上"><div class="form-hint"><i class="ti ti-info-circle"></i> 8文字以上で設定してください</div></div>
-        <div style="display:flex;gap:8px;margin-top:4px;">
-          <button class="btn btn-primary" onclick="doRegister()"><i class="ti ti-check"></i> 登録して始める</button>
-          <button class="btn btn-outline" onclick="goPage('page-landing')">キャンセル</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- パスワードリセット -->
-    <div id="auth-reset-form" style="display:none">
-      <div class="card">
-        <div class="card-title"><i class="ti ti-key" style="color:var(--green)"></i> パスワードをリセット</div>
-        <div class="auth-error"   id="reset-error"  ><i class="ti ti-alert-circle"></i> <span id="reset-error-msg"></span></div>
-        <div class="auth-success" id="reset-success"><i class="ti ti-mail"></i> <span id="reset-success-msg"></span></div>
-        <p style="font-size:13px;color:var(--text-sub);line-height:1.7;margin-bottom:16px;">登録したメールアドレスを入力してください。パスワードリセット用のリンクをお送りします。</p>
-        <div class="form-row"><div class="form-label">メールアドレス</div><input class="form-input" id="reset-email" type="email" placeholder="example@email.com"></div>
-        <div style="display:flex;gap:8px;margin-top:4px;">
-          <button class="btn btn-primary" id="reset-btn" onclick="doPasswordReset()"><i class="ti ti-send"></i> リセットメールを送る</button>
-          <button class="btn btn-outline" onclick="switchAuthTab('login')">ログインに戻る</button>
-        </div>
-      </div>
-    </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">🌱 循環型Q&Aコミュニティ</div>
+  <h1 class="hero-title">
+    <span class="highlight">詰まったら聞いて</span>、<br>
+    わかったら教えよう
+  </h1>
+  <p class="hero-sub">WiFiのつなぎ方からプログラミングまで。AIがすぐ答えて、仲間がさらに補足。助けた人がバッジをもらえる、知識が循環するコミュニティ。</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary btn-xl" href="app.html"><i class="ti ti-rocket"></i> 今すぐ使ってみる（無料）</a>
+    <a class="btn btn-outline btn-lg" href="#how">使い方を見る</a>
   </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-val">AI</div><div class="hero-stat-label">即回答</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">🔒</div><div class="hero-stat-label">秘密コミュニティ</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">🎖️</div><div class="hero-stat-label">バッジ獲得</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">✅</div><div class="hero-stat-label">出題者が解決認定</div></div>
+  </div>
+</section>
 
-  <!-- MAIN -->
-  <div class="page" id="page-main">
-    <div class="header">
-      <a class="logo" href="#"><div class="logo-icon">✅</div><span class="logo-text">404 Solved</span></a>
-      <div class="header-actions">
-        <span id="header-nick" style="font-size:12px;color:var(--text-sub);"></span>
-        <!-- 通知ベル -->
-        <div class="notif-btn" onclick="toggleNotifPanel()" id="notif-btn">
-          <i class="ti ti-bell"></i>
-          <div class="notif-dot" id="notif-dot"></div>
+<!-- MOCKUP -->
+<section class="mockup-section">
+  <div class="mockup-wrap">
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="mockup-dot" style="background:#FF5F56"></div>
+        <div class="mockup-dot" style="background:#FFBD2E"></div>
+        <div class="mockup-dot" style="background:#27C93F"></div>
+      </div>
+      <div class="mockup-content">
+        <div class="mock-header">
+          <div class="mock-logo">✅</div>
+          <div class="mock-title">404 Solved</div>
         </div>
-        <div id="header-avatar" style="width:30px;height:30px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;cursor:pointer;" onclick="goTab('profile')"></div>
-        <button class="btn btn-outline btn-sm" onclick="doLogout()">ログアウト</button>
-      </div>
-    </div>
-
-    <!-- 通知パネル -->
-    <div class="notif-panel" id="notif-panel">
-      <div class="notif-header">
-        通知
-        <span class="notif-clear" onclick="clearNotifs()">すべて既読にする</span>
-      </div>
-      <div id="notif-list"><div class="notif-empty">通知はありません</div></div>
-    </div>
-
-    <div class="nav-tabs">
-      <div class="nav-tab active" id="tab-community" onclick="goTab('community')"><i class="ti ti-layout-grid"></i> コミュニティ</div>
-      <div class="nav-tab" id="tab-qa" onclick="goTab('qa')"><i class="ti ti-messages"></i> Q&A</div>
-      <div class="nav-tab" id="tab-ranking" onclick="goTab('ranking')"><i class="ti ti-trophy"></i> ランキング</div>
-      <div class="nav-tab" id="tab-profile" onclick="goTab('profile')"><i class="ti ti-user-circle"></i> プロフィール</div>
-    </div>
-
-    <!-- コミュニティ -->
-    <div id="tab-content-community">
-      <div class="welcome-banner">
-        <i class="ti ti-hand-stop wb-icon"></i>
-        <div class="wb-body"><strong>どんな質問でも大丈夫です。</strong><br>解決したらお礼を送ろう。助けた人にはバッジが贈られます。</div>
-      </div>
-      <div class="community-grid" id="community-grid"></div>
-    </div>
-
-    <!-- Q&A -->
-    <div id="tab-content-qa" style="display:none">
-      <div style="font-size:12px;color:var(--text-sub);margin-bottom:14px;display:flex;align-items:center;gap:6px;" id="qa-context-label"></div>
-      <div class="ask-card">
-        <div class="ask-label"><i class="ti ti-sparkles" style="color:var(--green)"></i> 困ったことを投稿する — AIがすぐ回答します</div>
-        <div class="ask-selects">
-          <select class="ask-select" id="post-urgency">
-            <option value="low">緊急度：低め</option>
-            <option value="mid">緊急度：中（今日中）</option>
-            <option value="high">緊急度：高（今すぐ！）</option>
-          </select>
-          <select class="ask-select" id="post-tag">
-            <option value="t-wifi">WiFi・ネット</option>
-            <option value="t-app">アプリ</option>
-            <option value="t-device">スマホ・PC</option>
-            <option value="t-code">プログラミング</option>
-          </select>
-        </div>
-        <div class="ask-row">
-          <textarea class="ask-textarea" id="ask-text" placeholder="困ったことを書いてみて...（スクショも添付できます）"></textarea>
-          <button class="ask-submit" id="ask-submit" onclick="postQuestion()"><i class="ti ti-arrow-up"></i><br>投稿</button>
-        </div>
-        <div style="margin-top:8px;">
-          <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-            <i class="ti ti-photo-up" style="color:var(--green);font-size:18px;flex-shrink:0;"></i>
-            <div class="upload-text"><span>スクショ・画像を追加</span>（クリックまたはドラッグ＆ドロップ）</div>
-          </div>
-          <input type="file" id="file-input" accept="image/*" multiple onchange="handleFiles(this.files)">
-          <div class="preview-list" id="preview-list"></div>
-        </div>
-      </div>
-      <div class="search-bar">
-        <input class="search-input" id="search-input" type="text" placeholder="🔍 キーワードで検索..." oninput="renderQAList()">
-        <select class="sort-select" id="sort-select" onchange="renderQAList()">
-          <option value="new">新着順</option>
-          <option value="likes">いいね順</option>
-          <option value="urgent">緊急度順</option>
-        </select>
-      </div>
-      <div class="filter-row">
-        <button class="filter-btn active" data-f="all"    onclick="filterQA(this,'all')"><i class="ti ti-list"></i> すべて</button>
-        <button class="filter-btn"        data-f="open"   onclick="filterQA(this,'open')"><i class="ti ti-clock"></i> 未解決</button>
-        <button class="filter-btn"        data-f="solved" onclick="filterQA(this,'solved')"><i class="ti ti-circle-check"></i> 解決済み</button>
-        <button class="filter-btn"        data-f="mine"   onclick="filterQA(this,'mine')"><i class="ti ti-user"></i> 自分の質問</button>
-      </div>
-      <div id="qa-list"></div>
-    </div>
-
-    <!-- ランキング -->
-    <div id="tab-content-ranking" style="display:none">
-      <div class="card">
-        <div class="card-title"><i class="ti ti-trophy" style="color:var(--gold)"></i> 助けた数ランキング</div>
-        <div style="font-size:12px;color:var(--text-sub);margin-bottom:14px;">解決貢献×3＋いいね÷2＋お礼でスコア計算</div>
-        <div class="rank-list" id="rank-list"></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><i class="ti ti-medal" style="color:var(--gold)"></i> バッジ一覧</div>
-        <div class="badge-grid" id="all-badge-grid"></div>
-      </div>
-    </div>
-
-    <!-- プロフィール -->
-    <div id="tab-content-profile" style="display:none">
-      <div class="card">
-        <div class="profile-hero">
-          <div class="avatar-lg" id="profile-avatar"></div>
-          <div>
-            <div class="profile-name" id="profile-name"></div>
-            <div class="profile-role-text" id="profile-role-disp"></div>
-            <div class="profile-badges-row" id="profile-badges"></div>
+        <div class="mock-ai">
+          <div class="mock-ai-icon">🤖</div>
+          <div class="mock-ai-body">
+            <div class="mock-ai-badge">AI (Claude)</div><br>
+            Pythonをインストール後、<code>print("Hello")</code>を実行してみてください。ターミナルで<code>python ファイル名.py</code>と入力すれば動きます！
           </div>
         </div>
-        <div style="margin-bottom:12px;">
-          <div style="font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:8px;display:flex;align-items:center;gap:4px;"><i class="ti ti-medal"></i> 獲得バッジ</div>
-          <div id="my-badges-row" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+        <div class="mock-qa">
+          <div class="mock-qa-title">WiFiのつなぎ方がわからない</div>
+          <div class="mock-qa-meta">
+            <span class="mock-tag mt-wifi">WiFi</span>
+            <span class="mock-tag mt-solved">✅ 解決済み</span>
+          </div>
         </div>
-        <div style="font-size:12px;color:var(--text-sub);background:var(--bg);border-radius:var(--radius-md);padding:10px 12px;line-height:1.6;margin-bottom:12px;">
-          <i class="ti ti-lock"></i> 企業名・大学名は<strong>あなたにしか見えません</strong>。
+        <div class="mock-qa">
+          <div class="mock-qa-title">Pythonのprint文が動かない</div>
+          <div class="mock-qa-meta">
+            <span class="mock-tag mt-code">プログラミング</span>
+            <span class="mock-tag mt-open">⏰ 未回答</span>
+          </div>
         </div>
-        <div id="profile-private-info"></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><i class="ti ti-chart-bar" style="color:var(--green)"></i> あなたの活動</div>
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-val" id="stat-posts">0</div><div class="stat-label">投稿数</div></div>
-          <div class="stat-card"><div class="stat-val" style="color:#A32D2D" id="stat-likes">0</div><div class="stat-label">もらったいいね</div></div>
-          <div class="stat-card"><div class="stat-val" style="color:var(--green-dark)" id="stat-solved">0</div><div class="stat-label">解決に貢献</div></div>
-          <div class="stat-card"><div class="stat-val" style="color:var(--gold)" id="stat-thanks">0</div><div class="stat-label">もらったお礼</div></div>
+        <div style="text-align:center;margin-top:14px;">
+          <a href="app.html" class="btn btn-primary" style="width:100%;justify-content:center;">アプリを開く <i class="ti ti-arrow-right"></i></a>
         </div>
-      </div>
-      <div class="card">
-        <button class="btn btn-danger" style="width:100%;" onclick="doLogout()"><i class="ti ti-logout"></i> ログアウト</button>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- Lightbox -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
-  <img id="lightbox-img" src="" alt="拡大画像">
-</div>
-
-<!-- 削除確認モーダル -->
-<div class="modal-overlay" id="delete-modal">
-  <div class="modal">
-    <div class="modal-title">質問を削除しますか？</div>
-    <div class="modal-body">この操作は取り消せません。質問と回答がすべて削除されます。</div>
-    <div class="modal-actions">
-      <button class="btn btn-outline btn-sm" onclick="closeDeleteModal()">キャンセル</button>
-      <button class="btn btn-danger btn-sm" onclick="confirmDelete()"><i class="ti ti-trash"></i> 削除する</button>
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-eyebrow">Features</div>
+  <h2 class="section-title">全部入りのQ&Aアプリ</h2>
+  <p class="section-sub">初心者でも上級者でも使いやすい。AIから人まで、チームで答えてくれる。</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon fi-green">🤖</div>
+      <div class="feature-title">AI即答（Claude）</div>
+      <div class="feature-desc">質問を投稿するとClaude AIがすぐ回答。スクショを添付すればエラー画面も読み取って解決策を提示。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-blue">💬</div>
+      <div class="feature-title">スレッド返信</div>
+      <div class="feature-desc">回答に直接返信できるスレッド構造。「ありがとうございます！」「もう少し詳しく教えて」がすぐ伝わる。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-orange">🔒</div>
+      <div class="feature-title">秘密コミュニティ</div>
+      <div class="feature-desc">同じ大学・企業・学部の人だけが入れるプライベートスペース。外には見えない。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-purple">✅</div>
+      <div class="feature-title">出題者が解決認定</div>
+      <div class="feature-desc">回答が来ても、出題者が「これで解決した！」を押さない限り未解決のまま。信頼性を担保する仕組み。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-red">🏆</div>
+      <div class="feature-title">ランキング＋バッジ</div>
+      <div class="feature-desc">助けた数・もらったいいね・お礼でスコアが上がる。「先輩」「レジェンド」などバッジも獲得できる。</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon fi-teal">🔔</div>
+      <div class="feature-title">通知機能</div>
+      <div class="feature-desc">自分の質問に回答が届いたとき、いいねやお礼が来たときにリアルタイムで通知。見逃さない。</div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- バッジポップアップ -->
-<div class="badge-popup-overlay" id="badge-overlay" onclick="closeBadgePopup()"></div>
-<div class="badge-popup" id="badge-popup">
-  <div class="badge-popup-title">🎉 バッジを獲得しました！</div>
-  <div class="badge-popup-emoji" id="popup-emoji"></div>
-  <div class="badge-popup-name" id="popup-name"></div>
-  <div class="badge-popup-desc" id="popup-desc"></div>
-  <button class="btn btn-primary" style="width:100%;" onclick="closeBadgePopup()">やったー！</button>
-</div>
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="section-title">使い方は3ステップ</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">困ったことをつぶやく</div>
+          <div class="step-desc">WiFiにつながらない、アプリが動かない、コードのエラーが解決しない。どんな小さな悩みでも投稿してOK。スクショも貼れます。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">AIと仲間が答えてくれる</div>
+          <div class="step-desc">投稿するとClaudeがすぐ回答。さらに同じ悩みを乗り越えた仲間が補足してくれる。いいねで有益な回答が上に上がる仕組み。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">解決したら次の人を助ける</div>
+          <div class="step-desc">問題が解決したら「これで解決した！」を押してお礼を送ろう。解決した経験が積み上がるにつれてバッジが解放され、次は助ける側に回れる。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<div id="toast"><i class="ti ti-check"></i> <span id="toast-msg"></span></div>
+<!-- VERSIONS -->
+<section class="versions">
+  <div class="section-eyebrow">Roadmap</div>
+  <h2 class="section-title">開発ロードマップ</h2>
+  <p class="section-sub" style="margin-bottom:32px;">v1からv6まで、13週間で作り上げてきました。</p>
+  <div class="version-list">
+    <div class="version-item"><span class="version-badge vb-done">v1</span><div><div class="version-title">プロトタイプ</div><div class="version-desc">Q&A投稿・AIモック回答・いいね・解決機能・秘密コミュニティ・所属バッジ・緊急度表示</div></div></div>
+    <div class="version-item"><span class="version-badge vb-done">v2</span><div><div class="version-title">AI本格稼働</div><div class="version-desc">Claude API実装・スクショ添付・キーワード検索・いいね順ソート</div></div></div>
+    <div class="version-item"><span class="version-badge vb-done">v3</span><div><div class="version-title">本物の認証</div><div class="version-desc">Supabaseによるメール認証・ログイン状態の永続化</div></div></div>
+    <div class="version-item"><span class="version-badge vb-done">v4</span><div><div class="version-title">循環の仕組み</div><div class="version-desc">バッジシステム・ランキング・お礼機能・スコア可視化</div></div></div>
+    <div class="version-item"><span class="version-badge vb-done">v5</span><div><div class="version-title">UX磨き</div><div class="version-desc">パスワードリセット・スレッド返信・通知機能・質問削除</div></div></div>
+    <div class="version-item" style="border-color:var(--green);"><span class="version-badge vb-current">v6</span><div><div class="version-title">仕上げ・公開 ← 今ここ</div><div class="version-desc">LP作成・PWA化・Xシェア機能・全機能統合</div></div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2 class="cta-title">さあ、詰まりを解決しよう</h2>
+  <p class="cta-sub">どんな小さな悩みでも大歓迎。AIと仲間がすぐ答えます。</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <a class="btn btn-white btn-xl" href="app.html"><i class="ti ti-rocket"></i> 今すぐ始める（無料）</a>
+    <a class="btn btn-white-outline btn-lg" href="app.html">デモを見る</a>
+  </div>
+</section>
+
+<footer>
+  <strong>404 Solved</strong> — 詰まったら聞いて、わかったら教えよう<br>
+  <span style="margin-top:6px;display:block;">Built with Claude AI · web3・AI概論 2026</span>
+</footer>
+
+<!-- PWAインストールバナー -->
+<div id="pwa-banner">
+  <div id="pwa-banner-icon">✅</div>
+  <div id="pwa-banner-body">
+    <div id="pwa-banner-title">ホーム画面に追加</div>
+    <div id="pwa-banner-sub">アプリとして使えます</div>
+  </div>
+  <button class="btn btn-primary btn-sm" id="pwa-install-btn" style="flex-shrink:0;">追加</button>
+  <span id="pwa-banner-close" onclick="document.getElementById('pwa-banner').classList.remove('show')">×</span>
+</div>
 
 <script>
-const ROLE_LABELS = { student:'学生', worker:'社会人', it:'IT企業', housewife:'主婦・主夫', senior:'シニア', other:'その他' };
-const ROLE_ICONS  = { student:'ti-school', worker:'ti-briefcase', it:'ti-device-laptop', housewife:'ti-home', senior:'ti-heart', other:'ti-dots' };
-const ROLE_CLASS  = { student:'rp-student', worker:'rp-worker', it:'rp-it', housewife:'rp-housewife', senior:'rp-senior', other:'rp-student' };
-const PB_CLASS    = { student:'pb-student', worker:'pb-worker', it:'pb-it', housewife:'pb-student', senior:'pb-student', other:'pb-student' };
-const TAG_LABELS  = { 't-wifi':'WiFi', 't-app':'アプリ', 't-device':'スマホ・PC', 't-code':'プログラミング' };
-
-const ALL_BADGES = [
-  { id:'first_post',   emoji:'🌱', name:'はじめの一歩', desc:'最初の質問を投稿した',       class:'bc-beginner', condition: s => s.posts >= 1 },
-  { id:'first_answer', emoji:'💬', name:'初回答',        desc:'初めて回答を投稿した',       class:'bc-helper',   condition: s => s.answers >= 1 },
-  { id:'helper3',      emoji:'🤝', name:'助け人',         desc:'3つの解決に貢献した',        class:'bc-helper',   condition: s => s.solved >= 3 },
-  { id:'liked5',       emoji:'❤️', name:'人気者',         desc:'いいねを5つもらった',        class:'bc-solver',   condition: s => s.likes >= 5 },
-  { id:'thanks3',      emoji:'🙏', name:'感謝される人',  desc:'お礼を3回もらった',          class:'bc-senior',   condition: s => s.thanks >= 3 },
-  { id:'solver5',      emoji:'🏅', name:'問題解決者',     desc:'解決の決め手に5回選ばれた',  class:'bc-expert',   condition: s => s.solved >= 5 },
-  { id:'veteran10',    emoji:'⭐', name:'ベテラン',        desc:'回答を10個投稿した',         class:'bc-senior',   condition: s => s.answers >= 10 },
-  { id:'legend',       emoji:'👑', name:'レジェンド',     desc:'解決に10回以上貢献した',     class:'bc-legend',   condition: s => s.solved >= 10 },
-];
-
-let currentUser = null;
-let currentCommunity = { id:'open', name:'オープンQ&A' };
-let currentFilter = 'all';
-let attachedImages = [];
-let nextQAId = 5;
-let deleteTargetId = null;
-let notifications = [];
-let userData = {};
-
-let qaStore = [
-  { id:1, communityId:'open', owner:'さくら🌸', ownerRole:'student', title:'WiFiのつなぎ方がわからない', tag:'t-wifi', urgency:'high', status:'solved', solvedAnswerId:1, images:[],
-    answers:[
-      { id:1, nick:'田中先輩', role:'worker', body:'iPhoneなら「設定 → Wi-Fi」から接続できます。パスワードはルーターの裏面に書いてあります。', likes:12, likedByMe:false, time:'2時間前', isAI:false, thanked:true, replies:[] },
-      { id:2, nick:'AI (Claude)', role:'', body:'Androidの場合は「設定 → ネットワークとインターネット → Wi-Fi」から接続できます。', likes:5, likedByMe:false, time:'2時間前', isAI:true, thanked:false, replies:[] },
-    ]
-  },
-  { id:2, communityId:'open', owner:'けんた', ownerRole:'senior', title:'アプリが急に使えなくなった', tag:'t-app', urgency:'mid', status:'answered', solvedAnswerId:null, images:[],
-    answers:[{ id:1, nick:'まりこ', role:'housewife', body:'App Storeでアップデートボタンを押してみてください！', likes:8, likedByMe:false, time:'1日前', isAI:false, thanked:false, replies:[
-      { nick:'けんた', body:'やってみたら直りました！ありがとうございます', time:'1日前' }
-    ]}]
-  },
-  { id:3, communityId:'open', owner:'もえ', ownerRole:'student', title:'Pythonのprint文が動かない', tag:'t-code', urgency:'low', status:'open', solvedAnswerId:null, images:[], answers:[] },
-  { id:4, communityId:'open', owner:'よしお', ownerRole:'worker', title:'充電器を挿しているのにスマホが充電されない', tag:'t-device', urgency:'high', status:'open', solvedAnswerId:null, images:[],
-    answers:[{ id:1, nick:'AI (Claude)', role:'', body:'端子にほこりが詰まっている可能性があります。つまようじで軽く掃除してみてください。', likes:3, likedByMe:false, time:'4時間前', isAI:true, thanked:false, replies:[] }]
-  },
-];
-
-const rankingData = [
-  { nick:'田中先輩', role:'worker', solved:18, likes:47, thanks:12, badges:['helper3','liked5','thanks3','solver5','veteran10'] },
-  { nick:'まりこ',   role:'housewife', solved:11, likes:29, thanks:8, badges:['helper3','liked5','solver5'] },
-  { nick:'AI (Claude)', role:'', solved:9, likes:22, thanks:0, badges:['helper3','liked5'] },
-  { nick:'けんた',   role:'student', solved:5, likes:13, thanks:4, badges:['helper3','thanks3'] },
-  { nick:'さくら🌸', role:'student', solved:2, likes:6, thanks:1, badges:['first_post','first_answer'] },
-];
-
-// ===== ページ遷移 =====
-function goPage(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-  closeNotifPanel();
-}
-
-function goTab(tab) {
-  ['community','qa','ranking','profile'].forEach(t=>{
-    document.getElementById('tab-content-'+t).style.display = t===tab?'block':'none';
-    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
-  });
-  if(tab==='qa')      renderQAList();
-  if(tab==='ranking') renderRanking();
-  if(tab==='profile') renderProfile();
-  closeNotifPanel();
-}
-
-function switchAuthTab(tab) {
-  ['login','register','reset'].forEach(t=>{
-    document.getElementById('auth-'+t+'-form').style.display = t===tab?'block':'none';
-    document.getElementById('auth-tab-'+t).classList.toggle('active', t===tab);
-  });
-}
-
-function updateRoleFields() {
-  const r=document.getElementById('reg-role').value;
-  ['field-school','field-dept','field-company','field-deptco'].forEach(id=>document.getElementById(id).style.display='none');
-  if(r==='student'){ document.getElementById('field-school').style.display='block'; document.getElementById('field-dept').style.display='block'; }
-  else if(r==='worker'||r==='it'){ document.getElementById('field-company').style.display='block'; document.getElementById('field-deptco').style.display='block'; }
-}
-
-// ===== 認証 =====
-function doRegister() {
-  const nick=document.getElementById('reg-nick').value.trim();
-  const role=document.getElementById('reg-role').value;
-  const email=document.getElementById('reg-email').value.trim();
-  const password=document.getElementById('reg-password').value;
-  if(!nick||!role||!email||!password){ showAuthMsg('register','error','必須項目をすべて入力してください'); return; }
-  if(password.length<8){ showAuthMsg('register','error','パスワードは8文字以上で設定してください'); return; }
-  currentUser={ nick, role, email, school:document.getElementById('reg-school').value.trim(), dept:document.getElementById('reg-dept').value.trim(), company:document.getElementById('reg-company').value.trim(), deptco:document.getElementById('reg-deptco').value.trim() };
-  userData[nick]={ posts:0, answers:0, likes:0, solved:0, thanks:0, badges:[] };
-  showAuthMsg('register','success','登録完了！メールを確認してログインしてください。（デモのため確認なしで使えます）');
-  setTimeout(()=>{ initMain(); goPage('page-main'); },1500);
-}
-
-function doLogin() {
-  currentUser={ nick:'けんた', role:'student', email:'demo@example.com', school:'○○大学', dept:'情報工学部', company:'', deptco:'' };
-  userData['けんた']={ posts:2, answers:3, likes:4, solved:2, thanks:1, badges:['first_post','first_answer'] };
-  // デモ通知を追加
-  addNotif('💬', '<strong>田中先輩</strong>があなたの質問「WiFiのつなぎ方...」に回答しました', '2時間前');
-  addNotif('✅', '<strong>さくら🌸</strong>があなたの回答を「解決の決め手」に選びました', '昨日');
-  initMain(); goPage('page-main'); showToast('ログインしました！');
-}
-
-function doLogout() { currentUser=null; notifications=[]; goPage('page-landing'); }
-
-// パスワードリセット
-async function doPasswordReset() {
-  const email=document.getElementById('reset-email').value.trim();
-  if(!email){ showAuthMsg('reset','error','メールアドレスを入力してください'); return; }
-  const btn=document.getElementById('reset-btn'); btn.disabled=true;
-  // デモ：実際はSupabaseのresetPasswordForEmail()を呼ぶ
-  await new Promise(r=>setTimeout(r,800));
-  showAuthMsg('reset','success','リセット用メールを送りました。メールのリンクからパスワードを変更してください。');
-  btn.disabled=false;
-}
-
-function showAuthMsg(form, type, msg) {
-  const errEl=document.getElementById(form+'-error');
-  const sucEl=document.getElementById(form+'-success');
-  if(type==='error'){
-    errEl.classList.add('show'); sucEl.classList.remove('show');
-    document.getElementById(form+'-error-msg').textContent=msg;
-    setTimeout(()=>errEl.classList.remove('show'),5000);
-  } else {
-    sucEl.classList.add('show'); errEl.classList.remove('show');
-    document.getElementById(form+'-success-msg').textContent=msg;
-  }
-}
-
-function initMain() {
-  const u=currentUser;
-  document.getElementById('header-nick').textContent=u.nick;
-  document.getElementById('header-avatar').textContent=u.nick.charAt(0).toUpperCase();
-  renderCommunities();
-  updateNotifBell();
-  goTab('community');
-}
-
-// ===== 通知 =====
-function addNotif(icon, body, time, unread=true) {
-  notifications.unshift({ icon, body, time, unread });
-  updateNotifBell();
-  renderNotifList();
-}
-
-function updateNotifBell() {
-  const hasUnread=notifications.some(n=>n.unread);
-  document.getElementById('notif-dot').classList.toggle('show', hasUnread);
-}
-
-function toggleNotifPanel() {
-  const panel=document.getElementById('notif-panel');
-  panel.classList.toggle('open');
-  if(panel.classList.contains('open')) renderNotifList();
-}
-
-function closeNotifPanel() { document.getElementById('notif-panel')?.classList.remove('open'); }
-
-function renderNotifList() {
-  const list=document.getElementById('notif-list');
-  if(!notifications.length){ list.innerHTML='<div class="notif-empty">通知はありません</div>'; return; }
-  list.innerHTML=notifications.map(n=>`
-    <div class="notif-item${n.unread?' unread':''}">
-      <div class="notif-icon">${n.icon}</div>
-      <div class="notif-body">
-        <div>${n.body}</div>
-        <div class="notif-time">${n.time}</div>
-      </div>
-    </div>`).join('');
-}
-
-function clearNotifs() {
-  notifications.forEach(n=>n.unread=false);
-  updateNotifBell();
-  renderNotifList();
-  showToast('すべて既読にしました');
-}
-
-// 外クリックで通知パネルを閉じる
-document.addEventListener('click', e=>{
-  const panel=document.getElementById('notif-panel');
-  const btn=document.getElementById('notif-btn');
-  if(panel&&btn&&!panel.contains(e.target)&&!btn.contains(e.target)) closeNotifPanel();
+// PWAインストールプロンプト
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('pwa-banner').classList.add('show');
 });
-
-// ===== 質問削除 =====
-function openDeleteModal(qid) {
-  deleteTargetId=qid;
-  document.getElementById('delete-modal').classList.add('open');
-}
-function closeDeleteModal() {
-  deleteTargetId=null;
-  document.getElementById('delete-modal').classList.remove('open');
-}
-function confirmDelete() {
-  if(deleteTargetId===null) return;
-  qaStore=qaStore.filter(q=>q.id!==deleteTargetId);
-  closeDeleteModal();
-  showToast('質問を削除しました');
-  renderQAList();
-}
-
-// ===== コミュニティ =====
-function renderCommunities() {
-  const u=currentUser;
-  const comms=[
-    {id:'open',name:'オープンQ&A',desc:'誰でも投稿・閲覧できる',icon:'ci-open',ic:'ti-world',members:1240,locked:false},
-    {id:'school',name:u.school?u.school+'コミュニティ':'大学コミュニティ',desc:u.school?'同じ大学の人だけ':'大学名を登録すると参加可能',icon:'ci-school',ic:'ti-school',locked:!u.school},
-    {id:'dept',name:u.dept?u.dept+'コミュニティ':'学部コミュニティ',desc:u.dept?'同じ学部の人だけ':'学部名を登録すると参加可能',icon:'ci-dept',ic:'ti-book',locked:!u.dept},
-    {id:'company',name:u.company?u.company+'コミュニティ':'企業コミュニティ',desc:u.company?'同じ企業の人だけ':'企業名を登録すると参加可能',icon:'ci-company',ic:'ti-building',locked:!u.company},
-  ];
-  const grid=document.getElementById('community-grid'); grid.innerHTML='';
-  comms.forEach(c=>{
-    const d=document.createElement('div');
-    d.className='community-card'+(c.locked?' locked':'');
-    d.innerHTML=`<div class="comm-icon ${c.icon}"><i class="ti ${c.ic}"></i></div>
-      <div class="comm-name">${c.name}</div><div class="comm-desc">${c.desc}</div>
-      <div style="font-size:11px;color:var(--text-hint);margin-top:5px;">${!c.locked&&c.members?'👥 '+c.members+'人':''}</div>
-      <span class="comm-badge ${c.locked?'cb-locked':'cb-joined'}">${c.locked?'🔒 登録で参加':'参加中'}</span>`;
-    if(!c.locked) d.onclick=()=>{ currentCommunity=c; goTab('qa'); };
-    grid.appendChild(d);
-  });
-}
-
-// ===== ランキング =====
-function renderRanking() {
-  const myNick=currentUser.nick;
-  const scored=rankingData.map(u=>({...u,score:u.solved*3+Math.floor(u.likes/2)+u.thanks})).sort((a,b)=>b.score-a.score);
-  const list=document.getElementById('rank-list'); list.innerHTML='';
-  scored.forEach((u,i)=>{
-    const isMe=u.nick===myNick;
-    const div=document.createElement('div');
-    div.className=`rank-item${i===0?' rank-1':i===1?' rank-2':i===2?' rank-3':''}`;
-    if(isMe) div.style.cssText='border:1.5px solid var(--green);background:var(--green-light);';
-    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
-    const chips=(u.badges||[]).slice(0,2).map(bid=>{const b=ALL_BADGES.find(x=>x.id===bid);return b?`<span class="badge-chip ${b.class}">${b.emoji} ${b.name}</span>`:''}).join('');
-    div.innerHTML=`
-      <div class="rank-num">${medal}</div>
-      <div class="rank-avatar">${u.nick.charAt(0).toUpperCase()}</div>
-      <div class="rank-info">
-        <div class="rank-name">${u.nick} ${isMe?'<span style="font-size:10px;background:var(--green);color:#fff;padding:1px 7px;border-radius:10px;">あなた</span>':''}
-          ${u.role?`<span class="role-pill ${ROLE_CLASS[u.role]||'rp-student'}"><i class="ti ${ROLE_ICONS[u.role]||'ti-user'}"></i> ${ROLE_LABELS[u.role]||u.role}</span>`:''}
-        </div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;">${chips}</div>
-        <div class="rank-sub">解決${u.solved} / いいね${u.likes} / お礼${u.thanks}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;"><div class="rank-score">${u.score}</div><div class="rank-score-label">スコア</div></div>`;
-    list.appendChild(div);
-  });
-
-  const myData=userData[myNick]||{posts:0,answers:0,likes:0,solved:0,thanks:0,badges:[]};
-  const grid=document.getElementById('all-badge-grid'); grid.innerHTML='';
-  ALL_BADGES.forEach(b=>{
-    const earned=myData.badges.includes(b.id)||b.condition(myData);
-    const div=document.createElement('div');
-    div.className=`badge-card${earned?' earned':' locked'}`;
-    div.innerHTML=`<div class="badge-card-emoji">${b.emoji}</div><div class="badge-card-name">${b.name}</div><div class="badge-card-desc">${b.desc}</div><div class="badge-card-status">${earned?'✅ 獲得済み':'🔒 未獲得'}</div>`;
-    grid.appendChild(div);
-  });
-}
-
-// ===== バッジ =====
-function checkBadges() {
-  const nick=currentUser.nick;
-  if(!userData[nick]) return;
-  const data=userData[nick];
-  ALL_BADGES.forEach(b=>{
-    if(!data.badges.includes(b.id)&&b.condition(data)){
-      data.badges.push(b.id);
-      showBadgePopup(b);
-    }
-  });
-}
-function showBadgePopup(badge) {
-  document.getElementById('popup-emoji').textContent=badge.emoji;
-  document.getElementById('popup-name').textContent=badge.name;
-  document.getElementById('popup-desc').textContent=badge.desc;
-  document.getElementById('badge-overlay').classList.add('show');
-  document.getElementById('badge-popup').classList.add('show');
-}
-function closeBadgePopup() {
-  document.getElementById('badge-overlay').classList.remove('show');
-  document.getElementById('badge-popup').classList.remove('show');
-}
-
-// ===== Q&A =====
-function filterQA(btn,f) {
-  currentFilter=f;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
-  renderQAList();
-}
-
-function renderQAList() {
-  document.getElementById('qa-context-label').innerHTML=`<i class="ti ${currentCommunity.id==='open'?'ti-world':'ti-lock'}"></i> <strong>${currentCommunity.name}</strong>`;
-  const keyword=(document.getElementById('search-input')?.value||'').toLowerCase();
-  const sortBy=document.getElementById('sort-select')?.value||'new';
-  let items=qaStore.filter(q=>q.communityId===currentCommunity.id);
-  if(currentFilter==='open')   items=items.filter(q=>q.status!=='solved');
-  if(currentFilter==='solved') items=items.filter(q=>q.status==='solved');
-  if(currentFilter==='mine')   items=items.filter(q=>q.owner===currentUser.nick);
-  if(keyword) items=items.filter(q=>q.title.toLowerCase().includes(keyword));
-  if(sortBy==='likes') items.sort((a,b)=>b.answers.reduce((s,x)=>s+x.likes,0)-a.answers.reduce((s,x)=>s+x.likes,0));
-  else if(sortBy==='urgent'){const o={high:0,mid:1,low:2};items.sort((a,b)=>o[a.urgency]-o[b.urgency]);}
-  else items=items.slice().reverse();
-  const list=document.getElementById('qa-list'); list.innerHTML='';
-  if(!items.length){list.innerHTML='<div style="font-size:13px;color:var(--text-sub);padding:1rem 0;">該当する質問はありません。</div>';return;}
-  items.forEach(q=>list.appendChild(buildQACard(q)));
-}
-
-function buildQACard(q) {
-  const isOwner=currentUser&&currentUser.nick===q.owner;
-  const urgMap={high:['urg-high','今すぐ！'],mid:['urg-mid','今日中'],low:['urg-low','いつでも']};
-  const [urgCls,urgLabel]=urgMap[q.urgency]||urgMap.low;
-  const statusPill=q.status==='solved'
-    ?`<span class="status-pill sp-solved"><i class="ti ti-circle-check"></i> 解決済み</span>`
-    :q.answers.length?`<span class="status-pill sp-answered"><i class="ti ti-message-dots"></i> 回答あり</span>`
-    :`<span class="status-pill sp-open"><i class="ti ti-clock"></i> 未回答</span>`;
-  const totalLikes=q.answers.reduce((s,a)=>s+a.likes,0);
-  const card=document.createElement('div');
-  card.className='qa-card'+(q.status==='solved'?' is-solved':'');
-
-  let imagesHtml=q.images?.length?'<div class="qa-images">'+q.images.map(src=>`<img class="qa-img-thumb" src="${src}" onclick="openLightbox('${src}')">`).join('')+'</div>':'';
-  const solvedBanner=q.status==='solved'?`<div class="solved-banner"><i class="ti ti-circle-check"></i> 出題者が解決済みにしました。</div>`:'';
-
-  let answersHtml='';
-  q.answers.forEach(a=>{
-    const isSolvePick=q.solvedAnswerId===a.id;
-    const showThanks=isOwner&&q.status==='solved'&&!a.isAI;
-
-    // スレッド返信
-    const repliesHtml=a.replies?.length
-      ?`<div class="thread-replies">${a.replies.map((r,ri)=>`
-          <div class="thread-reply">
-            <div class="thread-reply-header">
-              <div class="thread-reply-avatar">${r.nick.charAt(0)}</div>
-              <span class="thread-reply-nick">${r.nick}</span>
-              <span class="thread-reply-time">${r.time}</span>
-            </div>
-            <div class="thread-reply-body">${r.body}</div>
-          </div>`).join('')}
-        </div>`
-      :'';
-
-    answersHtml+=`<div class="answer-item">
-      <div class="answer-header">
-        <div class="answer-avatar">${a.nick.charAt(0)}</div>
-        <span class="answer-nick">${a.nick}</span>
-        ${a.isAI?'<span class="ai-pill"><i class="ti ti-robot"></i> AI</span>':''}
-        ${isSolvePick?'<span class="solved-pick-pill"><i class="ti ti-check"></i> 解決の決め手</span>':''}
-        <span class="answer-time">${a.time}</span>
-      </div>
-      <div class="answer-body">${a.body}</div>
-      ${repliesHtml}
-      <div class="answer-actions">
-        <button class="like-btn${a.likedByMe?' liked':''}" onclick="toggleLike(${q.id},${a.id},this)">
-          <i class="ti ${a.likedByMe?'ti-heart-filled':'ti-heart'}"></i><span>${a.likes}</span> 役に立った
-        </button>
-        <button class="reply-to-btn" onclick="toggleReplyForm(${q.id},${a.id})"><i class="ti ti-corner-down-right"></i> 返信</button>
-        ${isOwner&&q.status!=='solved'?`<button class="resolve-btn" onclick="markSolved(${q.id},${a.id})"><i class="ti ti-circle-check"></i> これで解決した！</button>`:''}
-        ${showThanks?`<button class="thanks-btn${a.thanked?' thanked':''}" onclick="sendThanks(${q.id},${a.id},this)">${a.thanked?'🙏 お礼済み':'🙏 お礼を送る'}</button>`:''}
-      </div>
-      <div class="thread-reply-form" id="reply-form-${q.id}-${a.id}">
-        <textarea class="thread-reply-input" id="reply-input-${q.id}-${a.id}" placeholder="${a.nick}さんへの返信..."></textarea>
-        <div class="thread-reply-actions">
-          <button class="btn btn-outline btn-sm" onclick="toggleReplyForm(${q.id},${a.id})">キャンセル</button>
-          <button class="btn btn-primary btn-sm" onclick="postReply(${q.id},${a.id})"><i class="ti ti-send"></i> 返信</button>
-        </div>
-      </div>
-    </div>`;
-  });
-
-  const replyForm=q.status!=='solved'?`<div class="reply-form"><div class="reply-row">
-    <textarea class="reply-textarea" data-qid="${q.id}" placeholder="回答を書く..."></textarea>
-    <button class="btn btn-primary btn-sm" style="align-self:flex-end;" onclick="postAnswer(${q.id})"><i class="ti ti-send"></i> 回答</button>
-    </div></div>`:'';
-
-  card.innerHTML=`
-    <div class="qa-card-top">
-      <div class="qa-title-text" onclick="toggleAnswers(${q.id})">${q.title}</div>
-      <div class="qa-title-actions">
-        <span class="tag ${q.tag}">${TAG_LABELS[q.tag]||q.tag}</span>
-        ${isOwner?`<button class="delete-btn" onclick="openDeleteModal(${q.id})" title="質問を削除"><i class="ti ti-trash"></i></button>`:''}
-      </div>
-    </div>${imagesHtml}
-    <div class="qa-meta">
-      ${statusPill}
-      <span class="role-pill ${ROLE_CLASS[q.ownerRole]||'rp-student'}"><i class="ti ${ROLE_ICONS[q.ownerRole]||'ti-user'}"></i> ${q.owner}</span>
-      <span class="${urgCls}">${urgLabel}</span>
-      <span style="color:var(--text-hint)">${q.answers.length}件</span>
-      ${totalLikes>0?`<span style="color:#A32D2D;font-size:11px;"><i class="ti ti-heart-filled"></i> ${totalLikes}</span>`:''}
-    </div>
-    <div class="answers-section" id="ans-${q.id}">${solvedBanner}${answersHtml}${replyForm}</div>`;
-  return card;
-}
-
-function toggleAnswers(qid){document.getElementById('ans-'+qid).classList.toggle('open');}
-
-function toggleReplyForm(qid,aid){
-  const form=document.getElementById(`reply-form-${qid}-${aid}`);
-  form.classList.toggle('open');
-  if(form.classList.contains('open')) document.getElementById(`reply-input-${qid}-${aid}`).focus();
-}
-
-function postReply(qid,aid){
-  const input=document.getElementById(`reply-input-${qid}-${aid}`);
-  const body=input.value.trim();
-  if(!body){showToast('返信内容を入力してください');return;}
-  const q=qaStore.find(x=>x.id===qid);
-  const a=q.answers.find(x=>x.id===aid);
-  if(!a.replies) a.replies=[];
-  a.replies.push({nick:currentUser.nick,body,time:'たった今'});
-  // 通知
-  if(a.nick!==currentUser.nick&&!a.isAI){
-    addNotif('💬',`<strong>${currentUser.nick}</strong>があなたの回答に返信しました`,'たった今');
-  }
-  showToast('返信しました！');
-  renderQAList();
-  setTimeout(()=>{const s=document.getElementById('ans-'+qid);if(s)s.classList.add('open');},50);
-}
-
-function toggleLike(qid,aid,btn){
-  const q=qaStore.find(x=>x.id===qid),a=q.answers.find(x=>x.id===aid);
-  a.likedByMe=!a.likedByMe; a.likes+=a.likedByMe?1:-1;
-  btn.classList.toggle('liked',a.likedByMe);
-  btn.querySelector('i').className='ti '+(a.likedByMe?'ti-heart-filled':'ti-heart');
-  btn.querySelector('span').textContent=a.likes;
-  if(a.likedByMe){
-    showToast('いいね！しました ❤️');
-    if(userData[currentUser.nick]){userData[currentUser.nick].likes++;checkBadges();}
-    if(a.nick!==currentUser.nick&&!a.isAI) addNotif('❤️',`<strong>${currentUser.nick}</strong>があなたの回答にいいねしました`,'たった今');
-  }
-  renderQAList();
-}
-
-function markSolved(qid,aid){
-  const q=qaStore.find(x=>x.id===qid);
-  q.status='solved'; q.solvedAnswerId=aid;
-  const a=q.answers.find(x=>x.id===aid);
-  if(a&&userData[a.nick]){userData[a.nick].solved++;}
-  if(userData[currentUser.nick]){userData[currentUser.nick].solved++;}
-  if(a&&!a.isAI) addNotif('✅',`<strong>${currentUser.nick}</strong>があなたの回答を「解決の決め手」に選びました`,'たった今');
-  showToast('✅ 解決済みにしました！');
-  checkBadges();
-  renderQAList();
-  setTimeout(()=>{const s=document.getElementById('ans-'+qid);if(s)s.classList.add('open');},50);
-}
-
-function sendThanks(qid,aid,btn){
-  if(btn.classList.contains('thanked')) return;
-  const q=qaStore.find(x=>x.id===qid);
-  const a=q.answers.find(x=>x.id===aid);
-  a.thanked=true; btn.classList.add('thanked'); btn.textContent='🙏 お礼済み';
-  if(userData[a.nick]){userData[a.nick].thanks++;}
-  if(userData[currentUser.nick]){userData[currentUser.nick].thanks++;}
-  addNotif('🙏',`<strong>${currentUser.nick}</strong>があなたの回答にお礼を送りました`,'たった今');
-  showToast('🙏 お礼を送りました！');
-  checkBadges();
-}
-
-function postAnswer(qid){
-  const ta=document.querySelector(`.reply-textarea[data-qid="${qid}"]`);
-  const body=ta.value.trim();
-  if(!body){showToast('回答を入力してください');return;}
-  const q=qaStore.find(x=>x.id===qid);
-  const newId=q.answers.length?Math.max(...q.answers.map(a=>a.id))+1:1;
-  q.answers.push({id:newId,nick:currentUser.nick,role:currentUser.role,body,likes:0,likedByMe:false,time:'たった今',isAI:false,thanked:false,replies:[]});
-  if(q.status==='open') q.status='answered';
-  if(userData[currentUser.nick]){userData[currentUser.nick].answers++;checkBadges();}
-  // 出題者に通知
-  if(q.owner!==currentUser.nick) addNotif('💬',`<strong>${currentUser.nick}</strong>があなたの質問「${q.title.substring(0,20)}...」に回答しました`,'たった今');
-  showToast('回答を投稿しました！');
-  renderQAList();
-  setTimeout(()=>{const s=document.getElementById('ans-'+qid);if(s)s.classList.add('open');},50);
-}
-
-// ===== スクショ =====
-function handleFiles(files){Array.from(files).forEach(file=>{if(!file.type.startsWith('image/'))return;const reader=new FileReader();reader.onload=e=>{attachedImages.push(e.target.result);renderPreviews();};reader.readAsDataURL(file);});}
-function renderPreviews(){const list=document.getElementById('preview-list');list.innerHTML='';attachedImages.forEach((src,i)=>{const item=document.createElement('div');item.className='preview-item';item.innerHTML=`<img src="${src}" onclick="openLightbox('${src}')"><button class="preview-remove" onclick="removeImage(${i})">&times;</button>`;list.appendChild(item);});}
-function removeImage(i){attachedImages.splice(i,1);renderPreviews();}
-function onDragOver(e){e.preventDefault();document.getElementById('upload-area').classList.add('dragover');}
-function onDragLeave(){document.getElementById('upload-area').classList.remove('dragover');}
-function onDrop(e){e.preventDefault();document.getElementById('upload-area').classList.remove('dragover');handleFiles(e.dataTransfer.files);}
-function openLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('open');}
-function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
-
-// ===== 質問投稿+AI =====
-async function postQuestion(){
-  const text=document.getElementById('ask-text').value.trim();
-  if(!text){showToast('内容を入力してください');return;}
-  const btn=document.getElementById('ask-submit');btn.disabled=true;
-  const newQ={id:nextQAId++,communityId:currentCommunity.id,owner:currentUser.nick,ownerRole:currentUser.role,title:text,tag:document.getElementById('post-tag').value,urgency:document.getElementById('post-urgency').value,status:'open',solvedAnswerId:null,images:[...attachedImages],answers:[]};
-  qaStore.push(newQ);
-  document.getElementById('ask-text').value='';attachedImages=[];renderPreviews();
-  if(userData[currentUser.nick]){userData[currentUser.nick].posts++;checkBadges();}
-  showToast('質問を投稿しました！AIが回答中...');
-  renderQAList();
-  setTimeout(()=>{const s=document.getElementById('ans-'+newQ.id);if(s)s.classList.add('open');},50);
-  const ansSection=document.getElementById('ans-'+newQ.id);
-  if(ansSection){const t=document.createElement('div');t.className='ai-thinking';t.id='thinking-'+newQ.id;t.innerHTML=`<div class="answer-avatar" style="background:var(--green-light);color:var(--green-dark);">🤖</div><span style="font-weight:500;">AI (Claude)</span> が考えています<span class="ai-thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;ansSection.insertBefore(t,ansSection.firstChild);}
-  try{
-    const aiBody=await callClaudeAPI(text,newQ.tag,attachedImages);
-    document.getElementById('thinking-'+newQ.id)?.remove();
-    const aiId=newQ.answers.length?Math.max(...newQ.answers.map(a=>a.id))+1:1;
-    newQ.answers.push({id:aiId,nick:'AI (Claude)',role:'',body:aiBody,likes:0,likedByMe:false,time:'たった今',isAI:true,thanked:false,replies:[]});
-    if(newQ.status==='open') newQ.status='answered';
-    addNotif('🤖',`<strong>AI (Claude)</strong>があなたの質問「${text.substring(0,20)}...」に回答しました`,'たった今');
-    showToast('AIが回答しました！');
-    renderQAList();
-    setTimeout(()=>{const s=document.getElementById('ans-'+newQ.id);if(s)s.classList.add('open');},50);
-  }catch(e){document.getElementById('thinking-'+newQ.id)?.remove();showToast('AI回答の取得に失敗しました');}
-  btn.disabled=false;
-}
-
-async function callClaudeAPI(question,tag,images){
-  const tagNames={'t-wifi':'WiFi・ネット','t-app':'スマホアプリ','t-device':'スマホ・PC機器','t-code':'プログラミング'};
-  const system=`あなたは「404 Solved」というQ&Aサービスの親切なAIアシスタントです。カテゴリ：${tagNames[tag]||'IT'}に関する質問に答えています。日本語で、初心者にもわかりやすく、200〜400文字程度で、番号リストを使って具体的なステップで説明してください。最後に「解決しなければ他のユーザーの回答も参考にしてください！」と添えてください。`;
-  const userContent=images?.length>0?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:images[0].split(',')[1]}},{type:'text',text:question}]:question;
-  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system,messages:[{role:'user',content:userContent}]})});
-  if(!res.ok) throw new Error('API error');
-  const data=await res.json();
-  return data.content[0].text;
-}
-
-// ===== プロフィール =====
-function renderProfile(){
-  const u=currentUser;
-  const data=userData[u.nick]||{posts:0,answers:0,likes:0,solved:0,thanks:0,badges:[]};
-  document.getElementById('profile-avatar').textContent=u.nick.charAt(0).toUpperCase();
-  document.getElementById('profile-name').textContent=u.nick;
-  document.getElementById('profile-role-disp').textContent=ROLE_LABELS[u.role]||u.role;
-  const pb=document.getElementById('profile-badges');
-  pb.innerHTML=`<span class="pbadge ${PB_CLASS[u.role]||'pb-student'}"><i class="ti ${ROLE_ICONS[u.role]}"></i> ${ROLE_LABELS[u.role]}</span>`;
-  if(u.school||u.company) pb.innerHTML+=`<span class="pbadge pb-verified"><i class="ti ti-shield-check"></i> 所属認証済み</span>`;
-  const myBadgesRow=document.getElementById('my-badges-row');
-  const earned=ALL_BADGES.filter(b=>data.badges.includes(b.id)||b.condition(data));
-  myBadgesRow.innerHTML=earned.length?earned.map(b=>`<span class="badge-chip ${b.class}">${b.emoji} ${b.name}</span>`).join(''):'<span style="font-size:12px;color:var(--text-hint);">まだバッジがありません。回答して獲得しよう！</span>';
-  let priv='<div style="font-size:12px;color:var(--text-sub);margin-bottom:8px;"><i class="ti ti-lock"></i> あなたの非公開情報</div>';
-  if(u.school) priv+=`<div style="font-size:13px;padding:6px 0;border-bottom:0.5px solid var(--border);">🏫 大学 <strong>${u.school}</strong></div>`;
-  if(u.dept)   priv+=`<div style="font-size:13px;padding:6px 0;border-bottom:0.5px solid var(--border);">📚 学部 <strong>${u.dept}</strong></div>`;
-  if(u.company)priv+=`<div style="font-size:13px;padding:6px 0;">🏢 企業 <strong>${u.company}</strong></div>`;
-  if(!u.school&&!u.company) priv+='<div style="font-size:13px;color:var(--text-hint);">具体的な所属は未入力です</div>';
-  document.getElementById('profile-private-info').innerHTML=priv;
-  document.getElementById('stat-posts').textContent=data.posts;
-  document.getElementById('stat-likes').textContent=data.likes;
-  document.getElementById('stat-solved').textContent=data.solved;
-  document.getElementById('stat-thanks').textContent=data.thanks;
-}
-
-function showToast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('pwa-banner').classList.remove('show');
+});
 </script>
 </body>
 </html>
