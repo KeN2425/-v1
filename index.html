@@ -28,7 +28,6 @@
     .page { display: none; }
     .page.active { display: block; }
 
-    /* ローディング */
     .loading-screen { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; z-index: 9999; }
     .loading-screen.hidden { display: none; }
     .spinner { width: 28px; height: 28px; border: 2.5px solid var(--border-mid); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -239,7 +238,7 @@
     .like-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--border-mid); background: transparent; color: var(--text-sub); cursor: pointer; font-family: inherit; font-size: 12px; transition: all 0.15s; }
     .like-btn:hover { border-color: #E24B4A; color: #A32D2D; background: var(--red-light); }
     .like-btn.liked { background: var(--red-light); border-color: #F09595; color: #A32D2D; font-weight: 500; }
-    .resolve-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--green-mid); background: var(--green-light); color: var(--green-dark); cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500; transition: all 0.15s; }
+    .resolve-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--green-mid); background: var(--green-light); color: var(--green-dark); cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500; }
     .resolve-btn:hover { background: var(--green-mid); }
     .thanks-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--gold); background: #FFF8E7; color: #B7791F; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500; }
     .thanks-btn.thanked { background: var(--gold); color: #fff; border-color: var(--gold); cursor: default; }
@@ -248,7 +247,7 @@
 
     .reply-form { margin-top: 14px; border-top: 0.5px solid var(--border); padding-top: 14px; }
     .reply-row { display: flex; gap: 8px; }
-    .reply-textarea { flex: 1; resize: none; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 9px 12px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--bg); line-height: 1.6; min-height: 64px; transition: border-color 0.15s; }
+    .reply-textarea { flex: 1; resize: none; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 9px 12px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--bg); line-height: 1.6; min-height: 64px; }
     .reply-textarea:focus { outline: none; border-color: var(--green); }
 
     .ask-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 16px; }
@@ -256,12 +255,13 @@
     .ask-selects { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
     .ask-select { flex: 1; min-width: 120px; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 8px 10px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--bg); cursor: pointer; }
     .ask-row { display: flex; gap: 8px; }
-    .ask-textarea { flex: 1; resize: none; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--text); background: var(--bg); line-height: 1.6; min-height: 72px; transition: border-color 0.15s; }
+    .ask-textarea { flex: 1; resize: none; border-radius: var(--radius-md); border: 0.5px solid var(--border-mid); padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--text); background: var(--bg); line-height: 1.6; min-height: 72px; }
     .ask-textarea:focus { outline: none; border-color: var(--green); }
     .ask-submit { background: var(--green); color: #fff; border: none; border-radius: var(--radius-md); padding: 0 18px; font-size: 14px; font-family: inherit; font-weight: 700; cursor: pointer; align-self: flex-end; height: 42px; white-space: nowrap; }
     .ask-submit:hover { background: var(--green-dark); }
     .ask-submit:disabled { opacity: 0.5; cursor: default; }
 
+    /* 画像アップロード — テキスト参照URLのみ保存 */
     .upload-area { border: 1.5px dashed var(--border-mid); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
     .upload-area:hover { border-color: var(--green); background: #E1F5EE22; }
     .upload-area.dragover { border-color: var(--green); background: #E1F5EE33; }
@@ -272,6 +272,9 @@
     .preview-item { position: relative; width: 68px; height: 68px; border-radius: var(--radius-md); overflow: hidden; border: 0.5px solid var(--border-mid); }
     .preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .preview-remove { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff; border: none; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+    /* 画像サイズ警告 */
+    .img-warning { font-size: 11px; color: #854F0B; background: #FAEEDA; padding: 6px 10px; border-radius: var(--radius-md); margin-bottom: 8px; display: none; }
+    .img-warning.show { display: block; }
 
     .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; z-index: 9999; }
     .lightbox.open { display: flex; }
@@ -298,9 +301,7 @@
     .wb-body { font-size: 13px; color: var(--green-deep); line-height: 1.7; }
     .wb-body strong { font-weight: 700; }
 
-    /* DB同期インジケーター */
     .sync-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; background: var(--green-light); color: var(--green-dark); padding: 2px 8px; border-radius: 10px; font-weight: 500; }
-    .sync-badge.syncing { background: #FFF8E7; color: #B7791F; }
 
     @media (max-width: 480px) {
       .stats-grid { grid-template-columns: repeat(2,1fr); }
@@ -311,7 +312,6 @@
 </head>
 <body>
 
-<!-- ローディング -->
 <div class="loading-screen" id="loading-screen">
   <div style="font-size:36px;">✅</div>
   <div class="spinner"></div>
@@ -339,9 +339,9 @@
       </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
-      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">☁️</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">データ永続化</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">リロードしても消えない。みんなの投稿が残る</div></div>
-      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">👥</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">複数人で使える</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">登録した全員の投稿がリアルタイムで見える</div></div>
-      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">🤖</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">AI即答</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">Claude AIが質問に即回答</div></div>
+      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">☁️</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">データ永続化</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">リロードしても消えない</div></div>
+      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">👥</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">複数人で使える</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">全員の投稿が見える</div></div>
+      <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">🤖</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">AI即答</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">Claude AIが即回答</div></div>
       <div class="card" style="margin-bottom:0;text-align:center;padding:16px;"><div style="font-size:26px;margin-bottom:8px;">🏆</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">ランキング</div><div style="font-size:11px;color:var(--text-sub);line-height:1.5;">助けた数でスコアが上がる</div></div>
     </div>
   </div>
@@ -358,7 +358,6 @@
       <div class="auth-tab"        id="auth-tab-reset"    onclick="switchAuthTab('reset')">パスワードを忘れた</div>
     </div>
 
-    <!-- ログイン -->
     <div id="auth-login-form">
       <div class="card">
         <div class="card-title"><i class="ti ti-login" style="color:var(--green)"></i> ログイン</div>
@@ -373,12 +372,11 @@
       </div>
     </div>
 
-    <!-- 新規登録 -->
     <div id="auth-register-form" style="display:none">
       <div class="card">
         <div class="card-title"><i class="ti ti-user-plus" style="color:var(--green)"></i> アカウント登録</div>
         <div class="auth-msg error"   id="register-msg"><i class="ti ti-alert-circle"></i> <span id="register-msg-text"></span></div>
-        <div class="auth-msg success" id="register-success"><i class="ti ti-mail"></i> <span id="register-success-text"></span></div>
+        <div class="auth-msg success" id="register-success"><i class="ti ti-check"></i> <span id="register-success-text"></span></div>
         <div class="sep"><div class="sep-line"></div><span class="sep-label sep-public"><i class="ti ti-eye"></i> 公開情報</span><div class="sep-line"></div></div>
         <div class="form-row"><div class="form-label">ニックネーム <span class="badge-public">公開</span></div><input class="form-input" id="reg-nick" type="text" placeholder="例：たろう / ken_dev"></div>
         <div class="form-row">
@@ -399,7 +397,7 @@
         <div class="form-row" id="field-company" style="display:none"><div class="form-label">企業名 <span class="badge-private">非公開</span></div><input class="form-input" id="reg-company" type="text" placeholder="例：○○株式会社"></div>
         <div class="form-row" id="field-deptco" style="display:none"><div class="form-label">部署 <span class="badge-private">非公開</span></div><input class="form-input" id="reg-deptco" type="text" placeholder="例：開発部"></div>
         <div class="form-row"><div class="form-label">メールアドレス <span class="badge-private">非公開</span></div><input class="form-input" id="reg-email" type="email" placeholder="example@email.com"></div>
-        <div class="form-row"><div class="form-label">パスワード <span class="badge-private">非公開</span></div><input class="form-input" id="reg-password" type="password" placeholder="8文字以上"></div>
+        <div class="form-row"><div class="form-label">パスワード <span class="badge-private">非公開</span></div><input class="form-input" id="reg-password" type="password" placeholder="8文字以上"><div class="form-hint"><i class="ti ti-info-circle"></i> 8文字以上で設定してください</div></div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-primary" id="register-btn" onclick="doRegister()"><i class="ti ti-check"></i> 登録して始める</button>
           <button class="btn btn-outline" onclick="goPage('page-landing')">キャンセル</button>
@@ -407,7 +405,6 @@
       </div>
     </div>
 
-    <!-- パスワードリセット -->
     <div id="auth-reset-form" style="display:none">
       <div class="card">
         <div class="card-title"><i class="ti ti-key" style="color:var(--green)"></i> パスワードをリセット</div>
@@ -450,20 +447,18 @@
       <div class="nav-tab" id="tab-profile" onclick="goTab('profile')"><i class="ti ti-user-circle"></i> プロフィール</div>
     </div>
 
-    <!-- コミュニティ -->
     <div id="tab-content-community">
       <div class="welcome-banner">
         <i class="ti ti-hand-stop wb-icon"></i>
         <div class="wb-body">
           <strong>どんな質問でも大丈夫です。</strong><br>
           投稿するとAIがすぐ回答。解決したら次の人を助けよう。
-          <span class="sync-badge" id="sync-badge" style="margin-left:6px;"><i class="ti ti-cloud-check"></i> DB連携済み</span>
+          <span class="sync-badge" style="margin-left:6px;"><i class="ti ti-cloud-check"></i> DB連携済み</span>
         </div>
       </div>
       <div class="community-grid" id="community-grid"></div>
     </div>
 
-    <!-- Q&A -->
     <div id="tab-content-qa" style="display:none">
       <div style="font-size:12px;color:var(--text-sub);margin-bottom:14px;display:flex;align-items:center;gap:6px;" id="qa-context-label"></div>
       <div class="ask-card">
@@ -488,9 +483,10 @@
         <div style="margin-top:8px;">
           <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
             <i class="ti ti-photo-up" style="color:var(--green);font-size:18px;flex-shrink:0;"></i>
-            <div class="upload-text"><span>スクショ・画像を追加</span>（クリックまたはドラッグ＆ドロップ）</div>
+            <div class="upload-text"><span>スクショ・画像を追加</span>（500KB以下推奨）</div>
           </div>
           <input type="file" id="file-input" accept="image/*" multiple onchange="handleFiles(this.files)">
+          <div class="img-warning" id="img-warning">⚠️ 画像が大きすぎます。500KB以下に圧縮してください。</div>
           <div class="preview-list" id="preview-list"></div>
         </div>
       </div>
@@ -511,7 +507,6 @@
       <div id="qa-list"></div>
     </div>
 
-    <!-- ランキング -->
     <div id="tab-content-ranking" style="display:none">
       <div class="card">
         <div class="card-title"><i class="ti ti-trophy" style="color:var(--gold)"></i> 助けた数ランキング</div>
@@ -524,7 +519,6 @@
       </div>
     </div>
 
-    <!-- プロフィール -->
     <div id="tab-content-profile" style="display:none">
       <div class="card">
         <div class="profile-hero">
@@ -588,7 +582,7 @@
 <div id="toast"><i class="ti ti-check"></i> <span id="toast-msg"></span></div>
 
 <script>
-// ===== Supabase初期化 =====
+// ===== Supabase =====
 const SUPABASE_URL = 'https://ksrghbpsscivswlrkkiq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_CHJikqGJ3xNuOELZq5-baQ_ix555hEI';
 const { createClient } = supabase;
@@ -599,6 +593,7 @@ const ROLE_ICONS  = { student:'ti-school', worker:'ti-briefcase', it:'ti-device-
 const ROLE_CLASS  = { student:'rp-student', worker:'rp-worker', it:'rp-it', housewife:'rp-housewife', senior:'rp-senior', other:'rp-student' };
 const PB_CLASS    = { student:'pb-student', worker:'pb-worker', it:'pb-it', housewife:'pb-student', senior:'pb-student', other:'pb-student' };
 const TAG_LABELS  = { 't-wifi':'WiFi', 't-app':'アプリ', 't-device':'スマホ・PC', 't-code':'プログラミング' };
+const IMAGE_MAX_BYTES = 500 * 1024; // 500KB
 
 const ALL_BADGES = [
   { id:'first_post',   emoji:'🌱', name:'はじめの一歩', desc:'最初の質問を投稿した',      class:'bc-beginner', condition: s=>s.posts>=1 },
@@ -615,37 +610,26 @@ let currentUser = null;
 let currentProfile = null;
 let currentCommunity = { id:'open', name:'オープンQ&A' };
 let currentFilter = 'all';
-let attachedImages = [];
+let attachedImages = [];  // { dataUrl, size } の配列
 let deleteTargetId = null;
 let notifications = [];
 let userData = {};
-// メモリキャッシュ（DB取得後に格納）
 let qaCache = [];
-let answersCache = {};
-let repliesCache = {};
 
-// ===== 起動時セッション確認 =====
+// ===== 起動 =====
 window.addEventListener('DOMContentLoaded', async () => {
   const { data:{ session } } = await sb.auth.getSession();
-  if (session) {
-    await loadProfile(session.user);
-    await initMain();
-    goPage('page-main');
-  } else {
-    goPage('page-landing');
-  }
+  if (session) { await loadProfile(session.user); await initMain(); goPage('page-main'); }
+  else goPage('page-landing');
   document.getElementById('loading-screen').classList.add('hidden');
 });
 
 sb.auth.onAuthStateChange(async (event, session) => {
   if (event==='SIGNED_IN' && session) {
-    await loadProfile(session.user);
-    await initMain();
-    goPage('page-main');
+    await loadProfile(session.user); await initMain(); goPage('page-main');
     document.getElementById('loading-screen').classList.add('hidden');
   } else if (event==='SIGNED_OUT') {
-    currentUser=null; currentProfile=null;
-    goPage('page-landing');
+    currentUser=null; currentProfile=null; goPage('page-landing');
   }
 });
 
@@ -655,12 +639,11 @@ async function loadProfile(user) {
   currentProfile = data;
 }
 
-// ===== ページ遷移 =====
+// ===== ページ・タブ遷移 =====
 function goPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-  closeNotifPanel();
+  window.scrollTo(0,0); closeNotifPanel();
 }
 
 function goTab(tab) {
@@ -696,27 +679,49 @@ async function doRegister() {
   const password=document.getElementById('reg-password').value;
   if(!nick||!role||!email||!password){ showAuthMsg('register','error','必須項目をすべて入力してください'); return; }
   if(password.length<8){ showAuthMsg('register','error','パスワードは8文字以上で設定してください'); return; }
-  const btn=document.getElementById('register-btn'); btn.disabled=true;
-  const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ nick, role, school:document.getElementById('reg-school').value.trim(), dept:document.getElementById('reg-dept').value.trim(), company:document.getElementById('reg-company').value.trim(), deptco:document.getElementById('reg-deptco').value.trim() } } });
-  if(error){ showAuthMsg('register','error',error.message); btn.disabled=false; return; }
+  const btn=document.getElementById('register-btn'); btn.disabled=true; btn.textContent='登録中...';
+
+  const { data, error } = await sb.auth.signUp({
+    email, password,
+    options:{ data:{ nick, role,
+      school:  document.getElementById('reg-school').value.trim(),
+      dept:    document.getElementById('reg-dept').value.trim(),
+      company: document.getElementById('reg-company').value.trim(),
+      deptco:  document.getElementById('reg-deptco').value.trim()
+    }}
+  });
+
+  if(error){ showAuthMsg('register','error', error.message==='User already registered'?'このメールアドレスはすでに登録されています':error.message); btn.disabled=false; btn.innerHTML='<i class="ti ti-check"></i> 登録して始める'; return; }
+
+  // profilesテーブルに保存
   if(data.user){
-    await sb.from('profiles').upsert({ id:data.user.id, nick, role, school:document.getElementById('reg-school').value.trim(), dept:document.getElementById('reg-dept').value.trim(), company:document.getElementById('reg-company').value.trim(), deptco:document.getElementById('reg-deptco').value.trim(), email });
+    await sb.from('profiles').upsert({
+      id: data.user.id, nick, role,
+      school: document.getElementById('reg-school').value.trim(),
+      dept:   document.getElementById('reg-dept').value.trim(),
+      company:document.getElementById('reg-company').value.trim(),
+      deptco: document.getElementById('reg-deptco').value.trim(),
+      email
+    });
   }
-  showAuthMsg('register','success','確認メールを送りました！メールのリンクをクリックしてログインしてください。');
-  btn.disabled=false;
+
+  // メール確認オフなので即ログイン可
+  showAuthMsg('register','success','登録完了！ログインしてください。');
+  btn.disabled=false; btn.innerHTML='<i class="ti ti-check"></i> 登録して始める';
+  setTimeout(()=>switchAuthTab('login'), 1500);
 }
 
 async function doLogin() {
   const email=document.getElementById('login-email').value.trim();
   const password=document.getElementById('login-password').value;
   if(!email||!password){ showAuthMsg('login','error','メールアドレスとパスワードを入力してください'); return; }
-  const btn=document.getElementById('login-btn'); btn.disabled=true;
+  const btn=document.getElementById('login-btn'); btn.disabled=true; btn.textContent='ログイン中...';
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if(error){ showAuthMsg('login','error','メールアドレスまたはパスワードが正しくありません'); btn.disabled=false; return; }
-  btn.disabled=false;
+  if(error){ showAuthMsg('login','error','メールアドレスまたはパスワードが正しくありません'); btn.disabled=false; btn.innerHTML='<i class="ti ti-login"></i> ログイン'; return; }
+  btn.disabled=false; btn.innerHTML='<i class="ti ti-login"></i> ログイン';
 }
 
-async function doLogout() { await sb.auth.signOut(); goPage('page-landing'); }
+async function doLogout() { await sb.auth.signOut(); qaCache=[]; notifications=[]; goPage('page-landing'); }
 
 async function doPasswordReset() {
   const email=document.getElementById('reset-email').value.trim();
@@ -724,30 +729,30 @@ async function doPasswordReset() {
   const btn=document.getElementById('reset-btn'); btn.disabled=true;
   const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
   if(error){ showAuthMsg('reset','error',error.message); btn.disabled=false; return; }
-  showAuthMsg('reset','success','リセット用メールを送りました。メールのリンクからパスワードを変更してください。');
+  showAuthMsg('reset','success','リセット用メールを送りました。');
   btn.disabled=false;
 }
 
 function showAuthMsg(form, type, msg) {
   const errEl=document.getElementById(form+'-msg');
   const sucEl=document.getElementById(form+'-success');
-  if(errEl) { errEl.classList.toggle('show', type==='error'); document.getElementById(form+'-msg-text').textContent=msg; }
-  if(sucEl) { sucEl.classList.toggle('show', type==='success'); document.getElementById(form+'-success-text').textContent=msg; }
+  if(errEl){ errEl.classList.toggle('show', type==='error'); document.getElementById(form+'-msg-text').textContent=msg; if(type==='error') setTimeout(()=>errEl.classList.remove('show'),5000); }
+  if(sucEl){ sucEl.classList.toggle('show', type==='success'); document.getElementById(form+'-success-text').textContent=msg; }
 }
 
 // ===== メイン初期化 =====
 async function initMain() {
-  const nick=currentProfile?.nick||currentUser?.user_metadata?.nick||'ユーザー';
-  document.getElementById('header-nick').textContent=nick;
-  document.getElementById('header-avatar').textContent=nick.charAt(0).toUpperCase();
-  userData[nick] = userData[nick]||{ posts:0, answers:0, likes:0, solved:0, thanks:0, badges:[] };
+  const nick = currentProfile?.nick || currentUser?.user_metadata?.nick || 'ユーザー';
+  document.getElementById('header-nick').textContent = nick;
+  document.getElementById('header-avatar').textContent = nick.charAt(0).toUpperCase();
+  userData[nick] = userData[nick] || { posts:0, answers:0, likes:0, solved:0, thanks:0, badges:[] };
   renderCommunities();
   updateNotifBell();
 }
 
 // ===== 通知 =====
-function addNotif(icon, body, time, unread=true) {
-  notifications.unshift({ icon, body, time, unread });
+function addNotif(icon, body, time) {
+  notifications.unshift({ icon, body, time, unread:true });
   updateNotifBell(); renderNotifList();
 }
 function updateNotifBell() {
@@ -776,18 +781,18 @@ document.addEventListener('click', e=>{
 
 // ===== コミュニティ =====
 function renderCommunities() {
-  const p=currentProfile||currentUser?.user_metadata||{};
-  const comms=[
-    {id:'open',name:'オープンQ&A',desc:'誰でも投稿・閲覧できる',icon:'ci-open',ic:'ti-world',members:null,locked:false},
-    {id:'school',name:p.school?p.school+'コミュニティ':'大学コミュニティ',desc:p.school?'同じ大学の人だけ':'大学名を登録すると参加可能',icon:'ci-school',ic:'ti-school',locked:!p.school},
-    {id:'dept',name:p.dept?p.dept+'コミュニティ':'学部コミュニティ',desc:p.dept?'同じ学部の人だけ':'学部名を登録すると参加可能',icon:'ci-dept',ic:'ti-book',locked:!p.dept},
-    {id:'company',name:p.company?p.company+'コミュニティ':'企業コミュニティ',desc:p.company?'同じ企業の人だけ':'企業名を登録すると参加可能',icon:'ci-company',ic:'ti-building',locked:!p.company},
+  const p = currentProfile || currentUser?.user_metadata || {};
+  const comms = [
+    {id:'open',    name:'オープンQ&A', desc:'誰でも投稿・閲覧できる', icon:'ci-open',    ic:'ti-world',    locked:false},
+    {id:'school',  name:p.school  ? p.school+'コミュニティ'  :'大学コミュニティ',  desc:p.school  ?'同じ大学の人だけ':'大学名を登録すると参加可能', icon:'ci-school',  ic:'ti-school',   locked:!p.school},
+    {id:'dept',    name:p.dept    ? p.dept+'コミュニティ'    :'学部コミュニティ',  desc:p.dept    ?'同じ学部の人だけ':'学部名を登録すると参加可能', icon:'ci-dept',    ic:'ti-book',     locked:!p.dept},
+    {id:'company', name:p.company ? p.company+'コミュニティ':'企業コミュニティ',  desc:p.company ?'同じ企業の人だけ':'企業名を登録すると参加可能', icon:'ci-company', ic:'ti-building', locked:!p.company},
   ];
   const grid=document.getElementById('community-grid'); grid.innerHTML='';
   comms.forEach(c=>{
     const d=document.createElement('div');
     d.className='community-card'+(c.locked?' locked':'');
-    d.innerHTML=`<div class="comm-icon ${c.icon}"><i class="ti ${c.ic}"></i></div><div class="comm-name">${c.name}</div><div class="comm-desc">${c.desc}</div><div style="font-size:11px;color:var(--text-hint);margin-top:5px;"></div><span class="comm-badge ${c.locked?'cb-locked':'cb-joined'}">${c.locked?'🔒 登録で参加':'参加中'}</span>`;
+    d.innerHTML=`<div class="comm-icon ${c.icon}"><i class="ti ${c.ic}"></i></div><div class="comm-name">${c.name}</div><div class="comm-desc">${c.desc}</div><span class="comm-badge ${c.locked?'cb-locked':'cb-joined'}">${c.locked?'🔒 登録で参加':'参加中'}</span>`;
     if(!c.locked) d.onclick=()=>{ currentCommunity=c; goTab('qa'); };
     grid.appendChild(d);
   });
@@ -797,44 +802,32 @@ function renderCommunities() {
 async function loadAndRenderQA() {
   document.getElementById('qa-context-label').innerHTML=`<i class="ti ti-world"></i> <strong>${currentCommunity.name}</strong> <span style="font-size:11px;color:var(--text-hint);">読み込み中...</span>`;
   try {
-    // questions取得
-    let query = sb.from('questions').select('*').order('created_at', { ascending: false });
-    if(currentCommunity.id !== 'open') query = query.eq('community_id', currentCommunity.id);
-    const { data: questions, error } = await query;
+    let q = sb.from('questions').select('*').order('created_at',{ascending:false});
+    if(currentCommunity.id!=='open') q=q.eq('community_id',currentCommunity.id);
+    const { data:questions, error } = await q;
     if(error) throw error;
 
-    // answers取得
-    const qIds = questions.map(q=>q.id);
-    let ansData = [];
-    if(qIds.length) {
-      const { data } = await sb.from('answers').select('*').in('question_id', qIds).order('created_at', { ascending: true });
-      ansData = data||[];
-    }
+    const qIds=questions.map(x=>x.id);
+    let ansData=[];
+    if(qIds.length){ const { data }=await sb.from('answers').select('*').in('question_id',qIds).order('created_at',{ascending:true}); ansData=data||[]; }
 
-    // replies取得
-    const aIds = ansData.map(a=>a.id);
-    let repData = [];
-    if(aIds.length) {
-      const { data } = await sb.from('replies').select('*').in('answer_id', aIds).order('created_at', { ascending: true });
-      repData = data||[];
-    }
+    const aIds=ansData.map(a=>a.id);
+    let repData=[];
+    if(aIds.length){ const { data }=await sb.from('replies').select('*').in('answer_id',aIds).order('created_at',{ascending:true}); repData=data||[]; }
 
-    // キャッシュ構築
-    qaCache = questions.map(q=>({
+    // いいね済みのIDをセッションストレージから取得
+    const likedSet = getLikedSet();
+
+    qaCache=questions.map(q=>({
       ...q,
       answers: ansData.filter(a=>a.question_id===q.id).map(a=>({
-        ...a,
-        likes: a.likes||0,
-        likedByMe: false,
+        ...a, likes:a.likes||0,
+        likedByMe: likedSet.has(a.id),
         thanked: a.thanked||false,
         isAI: a.is_ai||false,
-        replies: repData.filter(r=>r.answer_id===a.id).map(r=>({
-          nick: r.nick, body: r.body,
-          time: timeAgo(r.created_at)
-        }))
+        replies: repData.filter(r=>r.answer_id===a.id).map(r=>({ nick:r.nick, body:r.body, time:timeAgo(r.created_at) }))
       }))
     }));
-
     renderQAList();
   } catch(e) {
     console.error(e);
@@ -842,24 +835,39 @@ async function loadAndRenderQA() {
   }
 }
 
+// ===== いいね管理（セッション内でユーザーごとに保持）=====
+function getLikedSet() {
+  try {
+    const uid = currentUser?.id || 'guest';
+    const stored = sessionStorage.getItem('liked_'+uid);
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  } catch { return new Set(); }
+}
+function saveLikedSet(set) {
+  try {
+    const uid = currentUser?.id || 'guest';
+    sessionStorage.setItem('liked_'+uid, JSON.stringify([...set]));
+  } catch {}
+}
+
 function timeAgo(isoStr) {
   if(!isoStr) return 'たった今';
-  const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
-  if(diff < 60) return 'たった今';
-  if(diff < 3600) return Math.floor(diff/60)+'分前';
-  if(diff < 86400) return Math.floor(diff/3600)+'時間前';
+  const diff=(Date.now()-new Date(isoStr).getTime())/1000;
+  if(diff<60) return 'たった今';
+  if(diff<3600) return Math.floor(diff/60)+'分前';
+  if(diff<86400) return Math.floor(diff/3600)+'時間前';
   return Math.floor(diff/86400)+'日前';
 }
 
-// ===== Q&Aフィルター・ソート =====
-function filterQA(btn, f) {
+// ===== フィルター・ソート =====
+function filterQA(btn,f) {
   currentFilter=f;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
   renderQAList();
 }
 
 function renderQAList() {
-  const nick = currentProfile?.nick||currentUser?.user_metadata?.nick||'';
+  const nick=currentProfile?.nick||currentUser?.user_metadata?.nick||'';
   document.getElementById('qa-context-label').innerHTML=`<i class="ti ${currentCommunity.id==='open'?'ti-world':'ti-lock'}"></i> <strong>${currentCommunity.name}</strong>`;
   const keyword=(document.getElementById('search-input')?.value||'').toLowerCase();
   const sortBy=document.getElementById('sort-select')?.value||'new';
@@ -875,7 +883,7 @@ function renderQAList() {
   items.forEach(q=>list.appendChild(buildQACard(q)));
 }
 
-// ===== Q&Aカード生成 =====
+// ===== Q&Aカード =====
 function buildQACard(q) {
   const nick=currentProfile?.nick||currentUser?.user_metadata?.nick||'';
   const isOwner=nick===q.owner_nick;
@@ -890,9 +898,9 @@ function buildQACard(q) {
   card.className='qa-card'+(q.status==='solved'?' is-solved':'');
 
   let imagesHtml='';
-  if(q.images?.length){imagesHtml='<div class="qa-images">'+q.images.map(src=>`<img class="qa-img-thumb" src="${src}" onclick="openLightbox('${src}')">`).join('')+'</div>';}
+  if(q.images?.length) imagesHtml='<div class="qa-images">'+q.images.map(src=>`<img class="qa-img-thumb" src="${src}" onclick="openLightbox('${src}')">`).join('')+'</div>';
 
-  const solvedBanner=q.status==='solved'?`<div class="solved-banner"><span><i class="ti ti-circle-check"></i> 出題者が解決済みにしました。</span><button class="share-btn" onclick="shareToX('${q.title}')"><i class="ti ti-brand-x"></i> Xでシェア</button></div>`:'';
+  const solvedBanner=q.status==='solved'?`<div class="solved-banner"><span><i class="ti ti-circle-check"></i> 出題者が解決済みにしました。</span><button class="share-btn" onclick="shareToX('${q.title.replace(/'/g,"\\'")}')"><i class="ti ti-brand-x"></i> Xでシェア</button></div>`:'';
 
   let answersHtml='';
   (q.answers||[]).forEach(a=>{
@@ -952,51 +960,60 @@ function buildQACard(q) {
 function toggleAnswers(qid){document.getElementById('ans-'+qid).classList.toggle('open');}
 function toggleReplyForm(qid,aid){const f=document.getElementById(`reply-form-${qid}-${aid}`);f.classList.toggle('open');if(f.classList.contains('open'))document.getElementById(`reply-input-${qid}-${aid}`).focus();}
 
-// ===== DB: いいね =====
-async function toggleLike(qid, aid, btn) {
+// ===== DB: いいね（重複防止） =====
+async function toggleLike(qid,aid,btn) {
+  const likedSet=getLikedSet();
   const q=qaCache.find(x=>x.id===qid);
   const a=q?.answers?.find(x=>x.id===aid);
   if(!a) return;
-  a.likedByMe=!a.likedByMe;
-  a.likes=(a.likes||0)+(a.likedByMe?1:-1);
+
+  if(likedSet.has(aid)) {
+    // 取り消し
+    likedSet.delete(aid);
+    a.likedByMe=false; a.likes=Math.max(0,(a.likes||1)-1);
+  } else {
+    // いいね
+    likedSet.add(aid);
+    a.likedByMe=true; a.likes=(a.likes||0)+1;
+    showToast('いいね！しました ❤️');
+  }
+  saveLikedSet(likedSet);
   btn.classList.toggle('liked',a.likedByMe);
   btn.querySelector('i').className='ti '+(a.likedByMe?'ti-heart-filled':'ti-heart');
   btn.querySelector('span').textContent=a.likes;
-  // DB更新
-  await sb.from('answers').update({ likes: a.likes }).eq('id', aid);
-  if(a.likedByMe) showToast('いいね！しました ❤️');
+  await sb.from('answers').update({ likes:a.likes }).eq('id',aid);
 }
 
 // ===== DB: 解決 =====
-async function markSolved(qid, aid) {
-  await sb.from('questions').update({ status:'solved', solved_answer_id:aid }).eq('id', qid);
+async function markSolved(qid,aid) {
+  await sb.from('questions').update({ status:'solved', solved_answer_id:aid }).eq('id',qid);
   const q=qaCache.find(x=>x.id===qid);
   if(q){ q.status='solved'; q.solved_answer_id=aid; }
   showToast('✅ 解決済みにしました！');
+  addNotif('✅','解決済みにしました！','たった今');
   renderQAList();
   setTimeout(()=>{const s=document.getElementById('ans-'+qid);if(s)s.classList.add('open');},50);
-  addNotif('✅',`解決済みにしました！`,'たった今');
 }
 
 // ===== DB: お礼 =====
-async function sendThanks(qid, aid, btn) {
+async function sendThanks(qid,aid,btn) {
   if(btn.classList.contains('thanked')) return;
-  await sb.from('answers').update({ thanked:true }).eq('id', aid);
+  await sb.from('answers').update({ thanked:true }).eq('id',aid);
   const q=qaCache.find(x=>x.id===qid);
   const a=q?.answers?.find(x=>x.id===aid);
   if(a) a.thanked=true;
   btn.classList.add('thanked'); btn.textContent='🙏 お礼済み';
   showToast('🙏 お礼を送りました！');
-  addNotif('🙏',`お礼を送りました`,'たった今');
+  addNotif('🙏','お礼を送りました','たった今');
 }
 
 // ===== DB: スレッド返信 =====
-async function postReply(qid, aid) {
+async function postReply(qid,aid) {
   const input=document.getElementById(`reply-input-${qid}-${aid}`);
   const body=input.value.trim();
   if(!body){ showToast('返信内容を入力してください'); return; }
   const nick=currentProfile?.nick||currentUser?.user_metadata?.nick||'ユーザー';
-  const { error } = await sb.from('replies').insert({ answer_id:aid, nick, body });
+  const { error }=await sb.from('replies').insert({ answer_id:aid, nick, body });
   if(error){ showToast('投稿に失敗しました'); return; }
   input.value='';
   document.getElementById(`reply-form-${qid}-${aid}`).classList.remove('open');
@@ -1011,103 +1028,122 @@ async function postAnswer(qid) {
   if(!body){ showToast('回答を入力してください'); return; }
   const nick=currentProfile?.nick||currentUser?.user_metadata?.nick||'ユーザー';
   const role=currentProfile?.role||'other';
-  const { error } = await sb.from('answers').insert({ question_id:qid, nick, role, body, is_ai:false });
+  const { error }=await sb.from('answers').insert({ question_id:qid, nick, role, body, is_ai:false });
   if(error){ showToast('投稿に失敗しました'); return; }
-  await sb.from('questions').update({ status:'answered' }).eq('id', qid).eq('status','open');
+  await sb.from('questions').update({ status:'answered' }).eq('id',qid).eq('status','open');
   ta.value='';
   showToast('回答を投稿しました！');
-  addNotif('💬',`<strong>${nick}</strong>が回答しました`,'たった今');
+  addNotif('💬',`回答を投稿しました`,'たった今');
   await loadAndRenderQA();
   setTimeout(()=>{const s=document.getElementById('ans-'+qid);if(s)s.classList.add('open');},50);
 }
 
 // ===== DB: 質問削除 =====
-function openDeleteModal(qid) { deleteTargetId=qid; document.getElementById('delete-modal').classList.add('open'); }
-function closeDeleteModal() { deleteTargetId=null; document.getElementById('delete-modal').classList.remove('open'); }
+function openDeleteModal(qid){ deleteTargetId=qid; document.getElementById('delete-modal').classList.add('open'); }
+function closeDeleteModal(){ deleteTargetId=null; document.getElementById('delete-modal').classList.remove('open'); }
 async function confirmDelete() {
   if(!deleteTargetId) return;
-  await sb.from('questions').delete().eq('id', deleteTargetId);
-  closeDeleteModal();
-  showToast('質問を削除しました');
+  await sb.from('questions').delete().eq('id',deleteTargetId);
+  closeDeleteModal(); showToast('質問を削除しました');
   await loadAndRenderQA();
 }
 
-// ===== スクショ =====
-function handleFiles(files){Array.from(files).forEach(file=>{if(!file.type.startsWith('image/'))return;const r=new FileReader();r.onload=e=>{attachedImages.push(e.target.result);renderPreviews();};r.readAsDataURL(file);});}
-function renderPreviews(){const list=document.getElementById('preview-list');list.innerHTML='';attachedImages.forEach((src,i)=>{const item=document.createElement('div');item.className='preview-item';item.innerHTML=`<img src="${src}" onclick="openLightbox('${src}')"><button class="preview-remove" onclick="removeImage(${i})">&times;</button>`;list.appendChild(item);});}
-function removeImage(i){attachedImages.splice(i,1);renderPreviews();}
-function onDragOver(e){e.preventDefault();document.getElementById('upload-area').classList.add('dragover');}
-function onDragLeave(){document.getElementById('upload-area').classList.remove('dragover');}
-function onDrop(e){e.preventDefault();document.getElementById('upload-area').classList.remove('dragover');handleFiles(e.dataTransfer.files);}
-function openLightbox(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox').classList.add('open');}
-function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+// ===== 画像アップロード（サイズ制限付き） =====
+function handleFiles(files) {
+  const warning=document.getElementById('img-warning');
+  let hasLarge=false;
+  Array.from(files).forEach(file=>{
+    if(!file.type.startsWith('image/')) return;
+    if(file.size > IMAGE_MAX_BYTES){ hasLarge=true; return; }
+    const reader=new FileReader();
+    reader.onload=e=>{ attachedImages.push(e.target.result); renderPreviews(); };
+    reader.readAsDataURL(file);
+  });
+  warning.classList.toggle('show', hasLarge);
+}
+function renderPreviews(){
+  const list=document.getElementById('preview-list'); list.innerHTML='';
+  attachedImages.forEach((src,i)=>{
+    const item=document.createElement('div'); item.className='preview-item';
+    item.innerHTML=`<img src="${src}" onclick="openLightbox('${src}')"><button class="preview-remove" onclick="removeImage(${i})">&times;</button>`;
+    list.appendChild(item);
+  });
+}
+function removeImage(i){ attachedImages.splice(i,1); renderPreviews(); }
+function onDragOver(e){ e.preventDefault(); document.getElementById('upload-area').classList.add('dragover'); }
+function onDragLeave(){ document.getElementById('upload-area').classList.remove('dragover'); }
+function onDrop(e){ e.preventDefault(); document.getElementById('upload-area').classList.remove('dragover'); handleFiles(e.dataTransfer.files); }
+function openLightbox(src){ document.getElementById('lightbox-img').src=src; document.getElementById('lightbox').classList.add('open'); }
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
 
-// ===== DB: 質問投稿 + AI回答 =====
+// ===== DB: 質問投稿 + AI =====
 async function postQuestion() {
   const text=document.getElementById('ask-text').value.trim();
   if(!text){ showToast('内容を入力してください'); return; }
   const btn=document.getElementById('ask-submit'); btn.disabled=true;
   const nick=currentProfile?.nick||currentUser?.user_metadata?.nick||'ユーザー';
   const role=currentProfile?.role||'other';
-  const tag=document.getElementById('post-tag').value;
-  const urgency=document.getElementById('post-urgency').value;
 
-  // DB挿入
-  const { data:newQ, error } = await sb.from('questions').insert({
-    owner_nick: nick, owner_role: role,
-    community_id: currentCommunity.id,
-    title: text, tag, urgency, status: 'open',
-    images: attachedImages.length ? attachedImages : null
+  // 画像は500KB以下のもののみDBへ
+  const safeImages=attachedImages.filter(src=>{
+    const bytes=(src.length*3)/4;
+    return bytes<IMAGE_MAX_BYTES;
+  });
+
+  const { data:newQ, error }=await sb.from('questions').insert({
+    owner_nick:nick, owner_role:role, community_id:currentCommunity.id,
+    title:text, tag:document.getElementById('post-tag').value,
+    urgency:document.getElementById('post-urgency').value,
+    status:'open', images:safeImages.length?safeImages:null
   }).select().single();
 
   if(error){ showToast('投稿に失敗しました'); btn.disabled=false; return; }
 
   document.getElementById('ask-text').value=''; attachedImages=[]; renderPreviews();
+  document.getElementById('img-warning').classList.remove('show');
   showToast('質問を投稿しました！AIが回答中...');
 
-  // キャッシュに追加して即表示
-  newQ.answers = [];
+  newQ.answers=[];
   qaCache.unshift(newQ);
   renderQAList();
   setTimeout(()=>{const s=document.getElementById('ans-'+newQ.id);if(s)s.classList.add('open');},50);
 
-  // AI思考中表示
   const ansSection=document.getElementById('ans-'+newQ.id);
   if(ansSection){
-    const t=document.createElement('div');t.className='ai-thinking';t.id='thinking-'+newQ.id;
+    const t=document.createElement('div'); t.className='ai-thinking'; t.id='thinking-'+newQ.id;
     t.innerHTML=`<div class="answer-avatar" style="background:var(--green-light);color:var(--green-dark);">🤖</div><span style="font-weight:500;">AI (Claude)</span> が考えています<span class="ai-thinking-dots"><span>.</span><span>.</span><span>.</span></span>`;
     ansSection.insertBefore(t,ansSection.firstChild);
   }
 
-  // AI回答をDBに保存
   try {
-    const aiBody=await callClaudeAPI(text, tag, attachedImages);
+    const aiBody=await callClaudeAPI(text, document.getElementById('post-tag').value, safeImages);
     document.getElementById('thinking-'+newQ.id)?.remove();
-    const { data:aiAnswer } = await sb.from('answers').insert({
-      question_id: newQ.id, nick:'AI (Claude)', role:'', body:aiBody, is_ai:true
+    const { data:aiAnswer }=await sb.from('answers').insert({
+      question_id:newQ.id, nick:'AI (Claude)', role:'', body:aiBody, is_ai:true
     }).select().single();
-    await sb.from('questions').update({ status:'answered' }).eq('id', newQ.id);
+    await sb.from('questions').update({ status:'answered' }).eq('id',newQ.id);
     if(aiAnswer){
-      newQ.answers.push({...aiAnswer, likes:0, likedByMe:false, thanked:false, isAI:true, replies:[]});
+      newQ.answers.push({...aiAnswer,likes:0,likedByMe:false,thanked:false,isAI:true,replies:[]});
       newQ.status='answered';
     }
-    addNotif('🤖',`<strong>AI</strong>が回答しました`,'たった今');
+    addNotif('🤖','AIが回答しました','たった今');
     showToast('AIが回答しました！');
     renderQAList();
     setTimeout(()=>{const s=document.getElementById('ans-'+newQ.id);if(s)s.classList.add('open');},50);
   } catch(e) {
     document.getElementById('thinking-'+newQ.id)?.remove();
     showToast('AI回答の取得に失敗しました');
+    console.error(e);
   }
   btn.disabled=false;
 }
 
-async function callClaudeAPI(question, tag, images) {
+async function callClaudeAPI(question,tag,images) {
   const tagNames={'t-wifi':'WiFi・ネット','t-app':'スマホアプリ','t-device':'スマホ・PC機器','t-code':'プログラミング'};
   const system=`あなたは「404 Solved」というQ&Aサービスの親切なAIアシスタントです。カテゴリ：${tagNames[tag]||'IT'}に関する質問に答えています。日本語で、初心者にもわかりやすく、200〜400文字程度で、番号リストを使って具体的なステップで説明してください。最後に「解決しなければ他のユーザーの回答も参考にしてください！」と添えてください。`;
   const userContent=images?.length>0?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:images[0].split(',')[1]}},{type:'text',text:question}]:question;
   const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system,messages:[{role:'user',content:userContent}]})});
-  if(!res.ok) throw new Error('API error');
+  if(!res.ok) throw new Error('API error '+res.status);
   const data=await res.json();
   return data.content[0].text;
 }
@@ -1120,21 +1156,40 @@ function shareToX(title) {
   showToast('Xでシェアしました！');
 }
 
-// ===== ランキング =====
-function renderRanking() {
+// ===== ランキング（DBから集計） =====
+async function renderRanking() {
   const nick=currentProfile?.nick||currentUser?.user_metadata?.nick||'';
-  // DB統計（簡易版：キャッシュから計算）
+  // キャッシュから集計
   const userScores={};
   qaCache.forEach(q=>{
     (q.answers||[]).forEach(a=>{
       if(a.isAI) return;
-      if(!userScores[a.nick]) userScores[a.nick]={ nick:a.nick, likes:0, solved:0, thanks:0, answers:0 };
+      if(!userScores[a.nick]) userScores[a.nick]={nick:a.nick,likes:0,solved:0,thanks:0,answers:0};
       userScores[a.nick].likes+=(a.likes||0);
       userScores[a.nick].answers++;
       if(a.thanked) userScores[a.nick].thanks++;
       if(q.solved_answer_id===a.id) userScores[a.nick].solved++;
     });
   });
+
+  // キャッシュがなければDBから取得
+  if(!qaCache.length) {
+    const { data:qs }=await sb.from('questions').select('*');
+    const qIds=(qs||[]).map(q=>q.id);
+    if(qIds.length){
+      const { data:as }=await sb.from('answers').select('*').in('question_id',qIds);
+      (as||[]).forEach(a=>{
+        if(a.is_ai) return;
+        if(!userScores[a.nick]) userScores[a.nick]={nick:a.nick,likes:0,solved:0,thanks:0,answers:0};
+        userScores[a.nick].likes+=(a.likes||0);
+        userScores[a.nick].answers++;
+        if(a.thanked) userScores[a.nick].thanks++;
+        const q=(qs||[]).find(x=>x.id===a.question_id);
+        if(q?.solved_answer_id===a.id) userScores[a.nick].solved++;
+      });
+    }
+  }
+
   const scored=Object.values(userScores).map(u=>({...u,score:u.solved*3+Math.floor(u.likes/2)+u.thanks})).sort((a,b)=>b.score-a.score);
   const list=document.getElementById('rank-list'); list.innerHTML='';
   if(!scored.length){list.innerHTML='<div style="font-size:13px;color:var(--text-sub);padding:1rem 0;">まだ回答がありません。最初に答えてみましょう！</div>';return;}
@@ -1145,13 +1200,12 @@ function renderRanking() {
     if(isMe) div.style.cssText='border:1.5px solid var(--green);background:var(--green-light);';
     const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
     div.innerHTML=`<div class="rank-num">${medal}</div><div class="rank-avatar">${u.nick.charAt(0).toUpperCase()}</div>
-      <div class="rank-info"><div class="rank-name">${u.nick} ${isMe?'<span style="font-size:10px;background:var(--green);color:#fff;padding:1px 7px;border-radius:10px;">あなた</span>':''}</div>
+      <div class="rank-info"><div class="rank-name">${u.nick}${isMe?' <span style="font-size:10px;background:var(--green);color:#fff;padding:1px 7px;border-radius:10px;">あなた</span>':''}</div>
       <div class="rank-sub">解決${u.solved} / いいね${u.likes} / お礼${u.thanks}</div></div>
       <div style="text-align:right;flex-shrink:0;"><div class="rank-score">${u.score}</div><div class="rank-score-label">スコア</div></div>`;
     list.appendChild(div);
   });
 
-  // バッジ
   const myData=userData[nick]||{posts:0,answers:0,likes:0,solved:0,thanks:0,badges:[]};
   const grid=document.getElementById('all-badge-grid'); grid.innerHTML='';
   ALL_BADGES.forEach(b=>{
@@ -1175,9 +1229,9 @@ function renderProfile() {
   pb.innerHTML=`<span class="pbadge ${PB_CLASS[role]||'pb-student'}"><i class="ti ${ROLE_ICONS[role]}"></i> ${ROLE_LABELS[role]||role}</span>`;
   if(p.school||p.company) pb.innerHTML+=`<span class="pbadge pb-verified"><i class="ti ti-shield-check"></i> 所属認証済み</span>`;
   const data=userData[nick]||{posts:0,answers:0,likes:0,solved:0,thanks:0,badges:[]};
-  const myBadgesRow=document.getElementById('my-badges-row');
+  const mbr=document.getElementById('my-badges-row');
   const earned=ALL_BADGES.filter(b=>data.badges.includes(b.id)||b.condition(data));
-  myBadgesRow.innerHTML=earned.length?earned.map(b=>`<span class="badge-chip ${b.class}">${b.emoji} ${b.name}</span>`).join(''):'<span style="font-size:12px;color:var(--text-hint);">まだバッジがありません。回答して獲得しよう！</span>';
+  mbr.innerHTML=earned.length?earned.map(b=>`<span class="badge-chip ${b.class}">${b.emoji} ${b.name}</span>`).join(''):'<span style="font-size:12px;color:var(--text-hint);">まだバッジがありません。回答して獲得しよう！</span>';
   let priv='<div style="font-size:12px;color:var(--text-sub);margin-bottom:8px;"><i class="ti ti-lock"></i> あなたの非公開情報</div>';
   if(p.school) priv+=`<div style="font-size:13px;padding:6px 0;border-bottom:0.5px solid var(--border);">🏫 大学 <strong>${p.school}</strong></div>`;
   if(p.dept)   priv+=`<div style="font-size:13px;padding:6px 0;border-bottom:0.5px solid var(--border);">📚 学部 <strong>${p.dept}</strong></div>`;
@@ -1185,18 +1239,12 @@ function renderProfile() {
   if(!p.school&&!p.company) priv+='<div style="font-size:13px;color:var(--text-hint);">具体的な所属は未入力です</div>';
   document.getElementById('profile-private-info').innerHTML=priv;
   // DB統計
-  const myQ=qaCache.filter(q=>q.owner_nick===nick).length;
-  const myA=qaCache.flatMap(q=>q.answers||[]).filter(a=>a.nick===nick&&!a.isAI).length;
-  const myLikes=qaCache.flatMap(q=>q.answers||[]).filter(a=>a.nick===nick&&!a.isAI).reduce((s,a)=>s+(a.likes||0),0);
-  const mySolved=qaCache.filter(q=>q.solved_answer_id&&(q.answers||[]).find(a=>a.nick===nick&&a.id===q.solved_answer_id)).length;
-  const myThanks=qaCache.flatMap(q=>q.answers||[]).filter(a=>a.nick===nick&&a.thanked&&!a.isAI).length;
-  document.getElementById('stat-posts').textContent=myQ;
-  document.getElementById('stat-likes').textContent=myLikes;
-  document.getElementById('stat-solved').textContent=mySolved;
-  document.getElementById('stat-thanks').textContent=myThanks;
+  document.getElementById('stat-posts').textContent=qaCache.filter(q=>q.owner_nick===nick).length;
+  document.getElementById('stat-likes').textContent=qaCache.flatMap(q=>q.answers||[]).filter(a=>a.nick===nick&&!a.isAI).reduce((s,a)=>s+(a.likes||0),0);
+  document.getElementById('stat-solved').textContent=qaCache.filter(q=>q.solved_answer_id&&(q.answers||[]).find(a=>a.nick===nick&&a.id===q.solved_answer_id)).length;
+  document.getElementById('stat-thanks').textContent=qaCache.flatMap(q=>q.answers||[]).filter(a=>a.nick===nick&&a.thanked&&!a.isAI).length;
 }
 
-// ===== バッジ =====
 function showBadgePopup(badge) {
   document.getElementById('popup-emoji').textContent=badge.emoji;
   document.getElementById('popup-name').textContent=badge.name;
@@ -1211,7 +1259,6 @@ function closeBadgePopup() {
 
 function showToast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
-// PWA
 if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 </script>
 </body>
